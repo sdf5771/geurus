@@ -1,12 +1,15 @@
 /**
  * 커서가 그루 히트박스 안에 있는지 추적하고, **상태가 바뀔 때만** 클릭 통과 여부를 보낸다.
- * 초기 상태는 "밖" — main이 창 생성 직후 이미 클릭 통과(`true`)로 두므로 첫 호출은 필요 없다.
+ * 초기 상태는 "밖"이다. 렌더러 재로드 등으로 main의 실제 상태와 어긋날 수 있으므로
+ * 마운트 시 `sync()`로 main을 클릭 통과(`true`)에 맞춘다.
  */
 export interface HitTracker {
   /** mousemove마다 호출. 히트 여부가 바뀌었을 때만 `setIgnore`를 부른다 */
   update(isHit: boolean): void
   /** 커서가 창을 벗어났을 때. 안에 있던 상태면 클릭 통과(`true`)로 복귀 */
   leave(): void
+  /** 상태를 "밖"으로 두고 이전 상태와 무관하게 `setIgnore(true)`를 한 번 보낸다 (마운트 시 동기화) */
+  sync(): void
   readonly isOver: boolean
 }
 
@@ -20,6 +23,10 @@ export function createHitTracker(setIgnore: (ignore: boolean) => void): HitTrack
     },
     leave() {
       tracker.update(false)
+    },
+    sync() {
+      isOver = false
+      setIgnore(true)
     },
     get isOver() {
       return isOver
