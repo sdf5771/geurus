@@ -8,8 +8,6 @@ export const IPC = {
   overlaySetIgnoreMouse: 'overlay:set-ignore-mouse',
 } as const
 
-export type IpcChannel = (typeof IPC)[keyof typeof IPC]
-
 /** preload가 `window.geurus`로 노출하는 렌더러 API */
 export interface GeurusApi {
   /**
@@ -22,6 +20,7 @@ export interface GeurusApi {
 
 declare global {
   interface Window {
-    geurus: GeurusApi
+    /** preload가 없는 환경(일반 브라우저로 dev 서버를 연 경우 등)에서는 undefined */
+    geurus?: GeurusApi
   }
 }

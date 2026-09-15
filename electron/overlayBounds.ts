@@ -20,7 +20,7 @@ export function bottomRightPosition(
   margin: number,
 ): { x: number; y: number } {
   return {
-    x: Math.round(workArea.x + workArea.width - size.width - margin),
-    y: Math.round(workArea.y + workArea.height - size.height - margin),
+    x: workArea.x + workArea.width - size.width - margin,
+    y: workArea.y + workArea.height - size.height - margin,
   }
 }
