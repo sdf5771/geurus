@@ -1,0 +1,93 @@
+import type { Grid } from './palette'
+
+/**
+ * 몸통 포즈 4종 — 원본 `docs/design/finishing-set.html`·`motion-system.html`의 `POSE`
+ * (두 파일 동일함을 스크립트로 확인). 이식만 하고 수정하지 않는다.
+ * 행 8~11(눈·입) 좌표는 4종 모두 같아서 EXPR 패치가 그대로 적용된다.
+ */
+export const POSE = {
+  stand: [
+    '................',
+    '....LL....LL....',
+    '...LlLL..LLlL...',
+    '....LLLllLLL....',
+    '.......ll.......',
+    '....GGGGGGGG....',
+    '...HHGGGGGGGG...',
+    '..HHGGGGGGGGGG..',
+    '..GGGWEGGWEGGG..',
+    '..GkGEEGGEEGkG..',
+    '..GGGGGmmGGGGD..',
+    '..GGGGGGGGGGDD..',
+    '...GGGGGGGGDD...',
+    '...GGGGGGGDDD...',
+    '....DGGGGGGD....',
+    '....bb....bb....',
+    '................',
+    '................',
+  ],
+  squash: [
+    '................',
+    '................',
+    '..LL........LL..',
+    '..LlLL....LLlL..',
+    '...LLLLllLLLL...',
+    '.......ll.......',
+    '...HHGGGGGGGG...',
+    '..HHGGGGGGGGGG..',
+    '..GGGWEGGWEGGG..',
+    '..GkGEEGGEEGkG..',
+    '..GGGGGmmGGGGD..',
+    '.GGGGGGGGGGGGDD.',
+    '.GGGGGGGGGGGGDD.',
+    '..GGGGGGGGGDDD..',
+    '...DGGGGGGDD....',
+    '..bbb....bbb....',
+    '................',
+    '................',
+  ],
+  stretch: [
+    '.....LL..LL.....',
+    '....LlL..LLl....',
+    '.....LLllLL.....',
+    '.......ll.......',
+    '.......ll.......',
+    '....GGGGGGGG....',
+    '...HHGGGGGGGG...',
+    '..HHGGGGGGGGGG..',
+    '..GGGWEGGWEGGG..',
+    '..GkGEEGGEEGkG..',
+    '..GGGGGmmGGGGD..',
+    '..GGGGGGGGGGDD..',
+    '..GGGGGGGGGDDD..',
+    '...GGGGGGGDDD...',
+    '....DGGGGGGD....',
+    '.....bb..bb.....',
+    '................',
+    '................',
+  ],
+  lean: [
+    '................',
+    '.....LL....LL...',
+    '....LlLL..LLlL..',
+    '.....LLLllLLL...',
+    '........ll......',
+    '.....GGGGGGGG...',
+    '....HHGGGGGGGG..',
+    '...HHGGGGGGGGGG.',
+    '..GGGWEGGWEGGG..',
+    '..GkGEEGGEEGkG..',
+    '..GGGGGmmGGGGD..',
+    '..GGGGGGGGGGDD..',
+    '..GGGGGGGGDDD...',
+    '..GGGGGGGDDD....',
+    '...DGGGGGGD.....',
+    '...bb....bb.....',
+    '................',
+    '................',
+  ],
+} as const satisfies Record<string, Grid>
+
+export type PoseKey = keyof typeof POSE
+
+export const POSE_KEYS = ['stand', 'squash', 'stretch', 'lean'] as const satisfies readonly PoseKey[]
