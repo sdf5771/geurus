@@ -1,7 +1,10 @@
 import { SPRITE_H, SPRITE_W, colorOf, type Grid } from './palette'
 import { PAD_X, PAD_Y } from './raster'
 
-/** 불투명 픽셀 bounding box (스프라이트 좌표, 양 끝 포함). 패딩은 포함하지 않는다 */
+/**
+ * 불투명 픽셀 bounding box (스프라이트 좌표, 양 끝 포함). 패딩은 포함하지 않는다.
+ * 픽셀 단위가 아니라 사각형이라서 잎 사이 틈·투명 모서리 클릭도 그루가 가져간다(의도 — 경계 깜빡임 방지).
+ */
 export interface GridBounds {
   readonly minX: number
   readonly minY: number
