@@ -10,7 +10,8 @@
     "build": "npm run typecheck && vite build",
     "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",
     "test": "vitest run",
-    "start": "electron ."
+    "start": "electron .",
+    "snapshot:check": "node scripts/snapshot-sprite-original.mjs --check"
   },
   "dependencies": {
     "react": "^18.3.1",

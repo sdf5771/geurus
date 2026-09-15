@@ -6,3 +6,4 @@ release
 coverage
 *.log
 .env*
+!.env.example
