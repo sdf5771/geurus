@@ -1,6 +1,6 @@
 /**
  * 트레이 템플릿 글리프 데이터와 비트맵 변환 (순수 로직, Electron 비의존).
- * 원본: docs/design/Geurus 마감 세트.html `TRAY_GLYPH.sprout` — 그대로 이식, 수정 금지.
+ * 원본: docs/design/finishing-set.html `TRAY_GLYPH.sprout` — 그대로 이식, 수정 금지.
  * `#` = 검정 불투명, `.` = 투명. macOS 템플릿 이미지이므로 색을 쓰지 않는다.
  */
 
