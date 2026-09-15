@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { APPLY_LEAF_ORIGINAL } from './__fixtures__/applyLeaf.original'
+import { APPLY_LEAF_ORIGINAL } from './__fixtures__/sprite.original'
 import {
   LEAF,
   LEAF_KEYS,
