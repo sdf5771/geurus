@@ -10,26 +10,31 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 const BUILD_CSP = [
   "default-src 'self'",
   "script-src 'self'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  "style-src 'self'",
+  "img-src 'self' data:",
   "font-src 'self' data:",
-  "connect-src 'self'",
+  // 렌더러는 네트워크를 쓰지 않는다(데이터는 main이 IPC로 전달).
+  "connect-src 'none'",
   "object-src 'none'",
   "base-uri 'none'",
   "form-action 'none'",
 ].join('; ')
 
 function buildCsp(): Plugin {
+  const meta = `<meta http-equiv="Content-Security-Policy" content="${BUILD_CSP}" />`
   return {
     name: 'geurus:build-csp',
     apply: 'build',
-    transformIndexHtml: () => [
-      {
-        tag: 'meta',
-        attrs: { 'http-equiv': 'Content-Security-Policy', content: BUILD_CSP },
-        injectTo: 'head-prepend',
+    transformIndexHtml: {
+      order: 'post',
+      // CSP meta는 스크립트·스타일 태그보다 앞에 있어야 그 요소들에 적용된다.
+      // injectTo:'head'는 Vite가 넣은 엔트리 <script>·<link> 뒤에 붙어서, charset 바로 뒤에 직접 삽입한다.
+      handler(html) {
+        const charset = /<meta\s+charset=[^>]*>/i
+        if (!charset.test(html)) throw new Error('[geurus:build-csp] index.html에 <meta charset>가 없습니다')
+        return html.replace(charset, (tag) => `${tag}\n    ${meta}`)
       },
-    ],
+    },
   }
 }
 
