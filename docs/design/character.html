@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitGrove — 그루 Character</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;700&family=DotGothic16&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-bg-deep:#0d1220; --c-bg-surface:#161d30; --c-bg-elevated:#1f273e; --c-bg-inset:#0a0f1c;
+  --c-border:#2d3551; --c-border-strong:#45506e; --c-divider:#232a44;
+  --c-gold-50:#fffbe8; --c-gold-200:#ffd770; --c-gold-300:#f5b94a; --c-gold-400:#e6a536; --c-gold-500:#c98a22;
+  --c-gold-bg:rgba(230,165,54,.12); --c-gold-border:rgba(230,165,54,.4);
+  --c-success:#6fcf7c; --c-info:#5fb8e6; --c-danger:#ff6b6b;
+  --c-text:#b8c0d8; --c-text-strong:#f4ecd2; --c-text-muted:#6d7798; --c-text-faint:#4a5273;
+  --font-px:'Pixelify Sans','DotGothic16',monospace;
+  --font-mono:'IBM Plex Mono',monospace;
+  --font-body:'Noto Sans KR',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{background:var(--c-bg-deep);}
+body{font-family:var(--font-body);color:var(--c-text);min-height:100vh;}
+.page{max-width:1080px;margin:0 auto;padding:60px 40px 110px;}
+
+.eyebrow{font-family:var(--font-px);font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--c-text-faint);margin-bottom:10px;}
+.page-name{font-family:var(--font-px);font-size:40px;color:var(--c-gold-200);letter-spacing:1px;line-height:1;margin-bottom:10px;}
+.page-sub{font-size:14px;color:var(--c-text-muted);max-width:560px;line-height:1.6;}
+.divider{height:1px;background:var(--c-divider);margin:56px 0;}
+.section-label{font-family:var(--font-px);font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--c-text-faint);margin-bottom:18px;}
+.section-title{font-family:var(--font-px);font-size:22px;color:var(--c-text-strong);margin-bottom:8px;letter-spacing:.5px;}
+.section-desc{font-size:13px;color:var(--c-text-muted);margin-bottom:30px;line-height:1.7;max-width:640px;}
+
+.card{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:10px;overflow:hidden;}
+.card-footer{padding:10px 16px;border-top:1px solid var(--c-divider);display:flex;justify-content:space-between;align-items:center;}
+.cf-label{color:var(--c-text-muted);font-family:var(--font-px);font-size:10px;letter-spacing:.08em;}
+.cf-meta{color:var(--c-text-faint);font-family:var(--font-mono);font-size:11px;}
+.bg-dark{background:var(--c-bg-deep);}
+.bg-grid{background-color:var(--c-bg-deep);background-image:linear-gradient(rgba(45,53,81,.35) 1px,transparent 1px),linear-gradient(90deg,rgba(45,53,81,.35) 1px,transparent 1px);background-size:24px 24px;}
+.bg-light{background:#e8e4da;}
+.bg-gold{background:var(--c-gold-400);}
+
+/* ── HERO ── */
+.hero{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--c-gold-border);border-radius:14px;overflow:hidden;background:radial-gradient(120% 90% at 30% 0%,rgba(230,165,54,.12),transparent 60%),var(--c-bg-deep);}
+.hero::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--c-gold-400),transparent);opacity:.6;}
+.hero-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:380px;background-image:linear-gradient(rgba(45,53,81,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(45,53,81,.28) 1px,transparent 1px);background-size:26px 26px;-webkit-mask-image:radial-gradient(120% 110% at 50% 45%,#000 45%,transparent 88%);mask-image:radial-gradient(120% 110% at 50% 45%,#000 45%,transparent 88%);}
+.hero-char{position:relative;animation:bob 2.6s ease-in-out infinite;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.char-shadow{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);width:120px;height:20px;background:radial-gradient(ellipse,rgba(0,0,0,.5),transparent 70%);animation:shadowPulse 2.6s ease-in-out infinite;}
+@keyframes shadowPulse{0%,100%{transform:translateX(-50%) scale(1);opacity:.55;}50%{transform:translateX(-50%) scale(.82);opacity:.32;}}
+.hero-info{padding:48px 44px;display:flex;flex-direction:column;justify-content:center;gap:18px;border-left:1px solid var(--c-border);}
+.hero-name{display:flex;align-items:baseline;gap:14px;flex-wrap:nowrap;white-space:nowrap;}
+.hero-name b{font-family:var(--font-px);font-size:46px;color:var(--c-gold-200);font-weight:700;letter-spacing:1px;line-height:1.15;}
+.hero-name span{font-family:var(--font-px);font-size:16px;color:var(--c-text-muted);letter-spacing:.5px;}
+.hero-tag{font-family:var(--font-px);font-size:15px;color:var(--c-text-strong);letter-spacing:.3px;}
+.hero-desc{font-size:13.5px;line-height:1.75;color:var(--c-text);}
+.hero-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+.chip{font-family:var(--font-mono);font-size:11px;color:var(--c-gold-300);background:var(--c-gold-bg);border:1px solid var(--c-gold-border);border-radius:999px;padding:5px 11px;}
+
+/* sprite rendering */
+.sprite{display:block;image-rendering:pixelated;image-rendering:crisp-edges;}
+
+/* expression grid */
+.grid-exp{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.exp{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:10px;overflow:hidden;}
+.exp-stage{height:160px;display:flex;align-items:center;justify-content:center;background:var(--c-bg-deep);position:relative;}
+.exp-stage .sprite{filter:drop-shadow(0 6px 0 rgba(0,0,0,.32));}
+.exp-meta{padding:12px 16px;border-top:1px solid var(--c-divider);}
+.exp-name{font-family:var(--font-px);font-size:15px;color:var(--c-text-strong);letter-spacing:.3px;}
+.exp-sub{font-family:var(--font-mono);font-size:10.5px;color:var(--c-text-faint);margin-top:3px;}
+
+/* anatomy */
+.anat{display:grid;grid-template-columns:1.1fr 1fr;gap:14px;}
+.anat-stage{display:flex;align-items:center;justify-content:center;padding:34px;gap:30px;}
+.callouts{display:flex;flex-direction:column;gap:0;}
+.callout{display:flex;gap:14px;padding:16px 18px;border-bottom:1px solid var(--c-divider);align-items:flex-start;}
+.callout:last-child{border-bottom:none;}
+.co-swatch{width:22px;height:22px;border-radius:4px;flex-shrink:0;margin-top:1px;border:1px solid rgba(255,255,255,.12);}
+.co-txt b{font-family:var(--font-px);font-size:13px;color:var(--c-text-strong);letter-spacing:.3px;display:block;margin-bottom:3px;}
+.co-txt span{font-size:12px;color:var(--c-text-muted);line-height:1.55;}
+.co-txt code{font-family:var(--font-mono);font-size:11px;color:var(--c-gold-300);}
+
+/* sizes */
+.size-row{display:flex;align-items:flex-end;justify-content:center;gap:40px;padding:40px;flex-wrap:wrap;}
+.size-item{display:flex;flex-direction:column;align-items:center;gap:12px;}
+.size-cap{font-family:var(--font-mono);font-size:11px;color:var(--c-text-faint);}
+
+/* app context */
+.ctx-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.toast{display:flex;align-items:center;gap:14px;background:var(--c-bg-elevated);border:1px solid var(--c-border);border-left:3px solid var(--c-success);border-radius:8px;padding:14px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.toast.warn{border-left-color:var(--c-danger);}
+.toast-txt b{font-family:var(--font-px);font-size:13px;color:var(--c-text-strong);display:block;letter-spacing:.2px;}
+.toast-txt span{font-size:11.5px;color:var(--c-text-muted);font-family:var(--font-mono);}
+.empty{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding:30px;}
+.empty b{font-family:var(--font-px);font-size:15px;color:var(--c-text-strong);letter-spacing:.3px;}
+.empty span{font-size:12px;color:var(--c-text-muted);line-height:1.6;}
+.empty button{font-family:var(--font-px);font-size:12px;color:#1a1206;background:var(--c-gold-400);border:none;border-radius:5px;padding:8px 16px;letter-spacing:.3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 0 rgba(0,0,0,.35);cursor:pointer;}
+.ctx-pad{padding:26px;display:flex;align-items:center;justify-content:center;min-height:150px;}
+
+/* do/dont */
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.dd{border-radius:8px;overflow:hidden;}
+.dd.ok{border:1px solid rgba(111,207,124,.3);background:rgba(111,207,124,.04);}
+.dd.no{border:1px solid rgba(255,107,107,.3);background:rgba(255,107,107,.04);}
+.dd-hdr{padding:8px 14px;font-family:var(--font-px);font-size:10px;letter-spacing:.1em;text-transform:uppercase;}
+.dd.ok .dd-hdr{background:rgba(111,207,124,.1);color:var(--c-success);}
+.dd.no .dd-hdr{background:rgba(255,107,107,.1);color:var(--c-danger);}
+.dd-body{padding:24px;display:flex;align-items:center;justify-content:center;min-height:120px;background:var(--c-bg-deep);}
+.dd-desc{padding:9px 14px;font-size:11.5px;color:var(--c-text-muted);border-top:1px solid var(--c-divider);}
+
+@media(max-width:760px){.hero{grid-template-columns:1fr;}.hero-info{border-left:none;border-top:1px solid var(--c-border);}.anat{grid-template-columns:1fr;}.grid-exp{grid-template-columns:1fr 1fr;}.ctx-grid,.do-dont{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="eyebrow">Brand Identity · Mascot</div>
+  <div class="page-name">그루 · Geuru</div>
+  <div class="page-sub">GitGrove의 마스코트. 커밋을 심으면 무럭무럭 자라는 작은 새싹 정령이에요. 픽셀아트 한 컷으로 브랜치 그래프와 그로브(숲)를 동시에 담았습니다.</div>
+
+  <!-- HERO -->
+  <div class="hero" style="margin-top:40px;">
+    <div class="hero-stage">
+      <div class="hero-char">
+        <div class="char-shadow"></div>
+        <div id="heroSprite"></div>
+      </div>
+    </div>
+    <div class="hero-info">
+      <div class="hero-name"><b>그루</b><span>Geuru</span></div>
+      <div class="hero-tag">"커밋 하나, 새싹 하나."</div>
+      <div class="hero-desc">씨앗 모양 몸통에 새싹이 돋은 작은 정령. 머리 위 두 잎은 브랜치, 발밑 뿌리는 로컬 저장소를 뜻해요. 평소엔 저장소 한켠에서 꾸벅꾸벅 졸다가, 커밋·머지·푸시가 일어나면 폴짝 반응합니다.</div>
+      <div class="hero-chips">
+        <span class="chip">16 × 18 px</span>
+        <span class="chip">gold #e6a536</span>
+        <span class="chip">grove #6fcf7c</span>
+        <span class="chip">Pixelify Sans</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ANATOMY -->
+  <div class="section-label">01 — Anatomy</div>
+  <div class="section-title">구성 요소</div>
+  <div class="section-desc">그루는 GitGrove 로고와 같은 픽셀 그리드·팔레트에서 출발합니다. 한 칸이 곧 한 픽셀이며, 외곽선 없이 명암만으로 입체를 만듭니다.</div>
+  <div class="anat">
+    <div class="card bg-grid"><div class="anat-stage"><div id="anatBig"></div><div id="anatSmall"></div></div></div>
+    <div class="card">
+      <div class="callouts">
+        <div class="callout"><div class="co-swatch" style="background:#6fcf7c;"></div><div class="co-txt"><b>새싹 (Sprout)</b><span>머리 위 두 잎 + 줄기. 그로브와 브랜치를 상징. <code>#6fcf7c / #3f9550</code></span></div></div>
+        <div class="callout"><div class="co-swatch" style="background:#e6a536;"></div><div class="co-txt"><b>씨앗 몸통 (Seed body)</b><span>골드 본체. 로고 트렁크와 같은 색. <code>#e6a536</code>, 음영 <code>#c98a22</code>, 하이라이트 <code>#ffd770</code></span></div></div>
+        <div class="callout"><div class="co-swatch" style="background:#10182b;"></div><div class="co-txt"><b>눈 (Eyes)</b><span>네이비 픽셀 두 칸 + 좌상단 화이트 반짝임 한 칸. <code>#10182b / #f4ecd2</code></span></div></div>
+        <div class="callout"><div class="co-swatch" style="background:#ff9b6b;"></div><div class="co-txt"><b>볼 터치 (Blush)</b><span>코랄 한 칸. 아바타 틴트 계열에서 차용. <code>#ff9b6b</code></span></div></div>
+        <div class="callout"><div class="co-swatch" style="background:#8a5a1e;"></div><div class="co-txt"><b>뿌리 발 (Roots)</b><span>아래 두 칸. 로컬 저장소에 뿌리내린 모습. <code>#8a5a1e</code></span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- EXPRESSIONS -->
+  <div class="section-label">02 — Expressions</div>
+  <div class="section-title">표정 세트</div>
+  <div class="section-desc">Git 워크플로의 순간마다 다른 표정을 씁니다. 눈·입 픽셀만 교체하면 되어 스프라이트 하나로 전부 표현해요.</div>
+  <div class="grid-exp" id="expGrid"></div>
+
+  <div class="divider"></div>
+
+  <!-- IN APP -->
+  <div class="section-label">03 — In the app</div>
+  <div class="section-title">제품 안에서</div>
+  <div class="section-desc">토스트, 빈 상태, 작은 상태 표시 등 작은 자리에 등장해 분위기를 살립니다. 본문 카피를 가리지 않는 32px 안팎으로만 사용하세요.</div>
+  <div class="ctx-grid">
+    <div class="card"><div class="ctx-pad bg-dark"><div class="toast"><div id="ctxToast1"></div><div class="toast-txt"><b>머지 완료</b><span>feature/login → main · 0 conflicts</span></div></div></div><div class="card-footer"><span class="cf-label">Success toast</span><span class="cf-meta">머지 완료</span></div></div>
+    <div class="card"><div class="ctx-pad bg-dark"><div class="toast warn"><div id="ctxToast2"></div><div class="toast-txt"><b>충돌이 생겼어요</b><span>3 files · 직접 해결이 필요해요</span></div></div></div><div class="card-footer"><span class="cf-label">Conflict toast</span><span class="cf-meta">충돌</span></div></div>
+    <div class="card" style="grid-column:1 / -1;"><div class="ctx-pad bg-grid"><div class="empty"><div id="ctxEmpty"></div><b>아직 커밋이 없어요</b><span>첫 커밋을 심으면 그루가 무럭무럭 자랄 거예요.</span><button>첫 커밋 만들기</button></div></div><div class="card-footer"><span class="cf-label">Empty state</span><span class="cf-meta">저장소 비어있음</span></div></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SIZES -->
+  <div class="section-label">04 — Sizes</div>
+  <div class="section-title">크기 변형</div>
+  <div class="section-desc">픽셀 정수배로만 키우거나 줄여 선명함을 유지합니다. 16px 미만에서는 새싹과 볼 터치를 생략한 미니 버전을 씁니다.</div>
+  <div class="card bg-dark"><div class="size-row" id="sizeRow"></div></div>
+
+  <div class="divider"></div>
+
+  <!-- DO / DONT -->
+  <div class="section-label">05 — Usage</div>
+  <div class="section-title">Do &amp; Don't</div>
+  <div class="section-desc">그루를 올바르게 쓰는 법.</div>
+  <div class="do-dont" style="margin-bottom:14px;">
+    <div class="dd ok"><div class="dd-hdr">✓ Do — 정수배 확대</div><div class="dd-body"><div id="ddOk1"></div></div><div class="dd-desc">픽셀이 또렷하게 보이도록 ×N 배율로만 키워요</div></div>
+    <div class="dd ok"><div class="dd-hdr">✓ Do — 다크 배경 위</div><div class="dd-body"><div id="ddOk2"></div></div><div class="dd-desc">네이비·그리드 배경에서 가장 또렷해요</div></div>
+  </div>
+  <div class="do-dont">
+    <div class="dd no"><div class="dd-hdr">✗ Don't — 흐리게/회전</div><div class="dd-body"><div id="ddNo1"></div></div><div class="dd-desc">보간 확대·기울임·회전으로 픽셀을 뭉개지 마세요</div></div>
+    <div class="dd no"><div class="dd-hdr">✗ Don't — 색 변경</div><div class="dd-body"><div id="ddNo2"></div></div><div class="dd-desc">몸통 골드·새싹 그린은 고정. 임의 색으로 칠하지 마세요</div></div>
+  </div>
+
+</div>
+
+<script>
+// ── Palette ──
+const PAL={
+  '.':null,
+  G:'#e6a536',  // gold body
+  D:'#c98a22',  // shadow gold
+  H:'#ffd770',  // highlight gold
+  L:'#6fcf7c',  // leaf
+  l:'#3f9550',  // dark leaf / stem
+  E:'#10182b',  // eye navy
+  W:'#f4ecd2',  // eye shine
+  k:'#ff9b6b',  // cheek blush
+  b:'#8a5a1e',  // root feet
+  m:'#7a4412',  // mouth
+  s:'#5fb8e6',  // sweat / sparkle blue
+  z:'#9fb0d8',  // zzz / soft
+};
+
+// ── Base sprite (16 wide × 18 tall) ──
+const BASE=[
+  "................",
+  "....LL....LL....",
+  "...LlLL..LLlL...",
+  "....LLLllLLL....",
+  ".......ll.......",
+  "....GGGGGGGG....",
+  "...HHGGGGGGGG...",
+  "..HHGGGGGGGGGG..",
+  "..GGGWEGGWEGGG..",
+  "..GkGEEGGEEGkG..",
+  "..GGGGGmmGGGGD..",
+  "..GGGGGGGGGGDD..",
+  "...GGGGGGGGDD...",
+  "...GGGGGGGDDD...",
+  "....DGGGGGGD....",
+  "....bb....bb....",
+  "................",
+  "................",
+];
+
+function gridToCells(grid){
+  return grid.map(r=>r.split(''));
+}
+// patches: {"r,c":"X"}
+function renderSprite(grid,scale,patch){
+  const cells=gridToCells(grid);
+  const rows=cells.length, cols=cells[0].length;
+  let rects='';
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      let ch=cells[r][c];
+      if(patch && patch[r+','+c]!==undefined) ch=patch[r+','+c];
+      const col=PAL[ch];
+      if(!col) continue;
+      rects+=`<rect x="${c}" y="${r}" width="1.02" height="1.02" fill="${col}"/>`;
+    }
+  }
+  const w=cols*scale, h=rows*scale;
+  return `<svg class="sprite" width="${w}" height="${h}" viewBox="0 0 ${cols} ${rows}" shape-rendering="crispEdges">${rects}</svg>`;
+}
+
+// ── Expressions (eye + mouth patches over BASE) ──
+const EXP={
+  idle:{}, // base
+  happy:{ // 반가워 — 웃는 눈, 입 벌린 미소
+    "8,5":"G","8,6":"G","8,9":"G","8,10":"G",
+    "9,5":"E","9,6":"E","9,9":"E","9,10":"E",
+    "9,3":"k","9,12":"k",
+    "10,5":"G","10,6":"m","10,7":"m","10,8":"m","10,9":"m","10,12":"G",
+    "11,6":"G","11,7":"m","11,8":"m","11,9":"G",
+  },
+  think:{ // 생각중 — 눈 위로, 한쪽 입꼬리
+    "8,5":"E","8,6":"E","8,9":"E","8,10":"E",
+    "9,5":"G","9,6":"G","9,9":"G","9,10":"G",
+    "10,5":"G","10,6":"G","10,7":"m","10,8":"G",
+    "8,13":"z","7,13":"z",
+  },
+  merge:{ // 머지 완료 — 반짝 눈, 큰 미소
+    "8,5":"H","8,6":"E","8,9":"H","8,10":"E",
+    "9,5":"E","9,6":"H","9,9":"E","9,10":"H",
+    "9,3":"k","9,12":"k",
+    "10,5":"m","10,6":"G","10,7":"m","10,8":"m","10,9":"G","10,10":"m",
+    "11,6":"m","11,7":"m","11,8":"m","11,9":"m",
+    "7,1":"H","7,14":"H","12,2":"H",
+  },
+  conflict:{ // 충돌 — 놀란 눈, 땀
+    "8,5":"E","8,6":"E","8,9":"E","8,10":"E",
+    "9,5":"E","9,6":"E","9,9":"E","9,10":"E",
+    "10,6":"G","10,7":"m","10,8":"m","10,9":"G",
+    "11,7":"m","11,8":"m",
+    "8,13":"s","9,13":"s",
+  },
+  sleepy:{ // 졸려 — 감은 눈, zzz
+    "8,5":"G","8,6":"G","8,9":"G","8,10":"G",
+    "9,5":"E","9,6":"E","9,9":"E","9,10":"E",
+    "10,7":"G","10,8":"m",
+    "5,13":"z","4,14":"z","6,12":"z",
+  },
+  blink:{ // 깜빡
+    "8,5":"G","8,6":"G","8,9":"G","8,10":"G",
+    "9,5":"E","9,6":"E","9,9":"E","9,10":"E",
+  },
+};
+
+// ── Render hero (animated blink) ──
+const hero=document.getElementById('heroSprite');
+function paintHero(p){ hero.innerHTML=renderSprite(BASE,9,p); }
+paintHero(EXP.idle);
+(function blinkLoop(){
+  function cycle(){
+    paintHero(EXP.blink);
+    setTimeout(()=>paintHero(EXP.idle),140);
+    setTimeout(cycle, 2600+Math.random()*2600);
+  }
+  setTimeout(cycle,1800);
+})();
+
+// ── Anatomy ──
+document.getElementById('anatBig').innerHTML=renderSprite(BASE,11,EXP.idle);
+document.getElementById('anatSmall').innerHTML=renderSprite(BASE,4,EXP.idle);
+
+// ── Expressions grid ──
+const expList=[
+  ['idle','기본','idle · 대기'],
+  ['happy','반가워','wave · 환영'],
+  ['think','생각중','staging · diff 검토'],
+  ['merge','머지 완료','merge · push 성공'],
+  ['conflict','충돌!','conflict · 에러'],
+  ['sleepy','졸려','idle long · 비활성'],
+];
+document.getElementById('expGrid').innerHTML=expList.map(([k,name,sub])=>`
+  <div class="exp">
+    <div class="exp-stage">${renderSprite(BASE,7,EXP[k])}</div>
+    <div class="exp-meta"><div class="exp-name">${name}</div><div class="exp-sub">${sub}</div></div>
+  </div>`).join('');
+
+// ── App context ──
+document.getElementById('ctxToast1').innerHTML=renderSprite(BASE,2.4,EXP.merge);
+document.getElementById('ctxToast2').innerHTML=renderSprite(BASE,2.4,EXP.conflict);
+document.getElementById('ctxEmpty').innerHTML=renderSprite(BASE,4,EXP.sleepy);
+
+// ── Sizes ──
+const sizes=[['16px',1],['32px',2],['48px',3],['64px',4],['96px',6]];
+document.getElementById('sizeRow').innerHTML=sizes.map(([cap,sc])=>`
+  <div class="size-item">${renderSprite(BASE,sc,EXP.idle)}<div class="size-cap">${cap}</div></div>`).join('');
+
+// ── Do/Dont ──
+document.getElementById('ddOk1').innerHTML=renderSprite(BASE,5,EXP.idle);
+document.getElementById('ddOk2').innerHTML=renderSprite(BASE,4,EXP.happy);
+// bad: blurry + rotated
+document.getElementById('ddNo1').innerHTML=renderSprite(BASE,5,EXP.idle).replace('class="sprite"','class="sprite" style="image-rendering:auto;transform:rotate(-12deg);filter:blur(.4px)"').replace('shape-rendering="crispEdges"','');
+// bad: recolored
+const badPAL={...PAL,G:'#9b5cff',D:'#6d3fb0',H:'#c79bff',L:'#ff5fae',l:'#b03f7a'};
+(function(){
+  const cells=gridToCells(BASE);let rects='';
+  for(let r=0;r<cells.length;r++)for(let c=0;c<cells[0].length;c++){
+    let ch=cells[r][c];const col=badPAL[ch];if(!col)continue;
+    rects+=`<rect x="${c}" y="${r}" width="1.02" height="1.02" fill="${col}"/>`;}
+  document.getElementById('ddNo2').innerHTML=`<svg class="sprite" width="${16*5}" height="${18*5}" viewBox="0 0 16 18" shape-rendering="crispEdges">${rects}</svg>`;
+})();
+</script>
+</body>
+</html>
