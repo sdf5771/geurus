@@ -9,30 +9,28 @@
 
 | 항목 | 상태 |
 |---|---|
-| 단계 | **마일스톤 1(오버레이 셸) — 구현·검증 완료, PR 준비** |
-| 브랜치 | `feat/m1-overlay-shell` → base `main` · 로컬 커밋, **push 안 함** |
-| 검증 | review **Ready** · qa 최종 재검증 **전 항목 통과, 새 버그 없음** · vision **이탈 없음** · test 240 · typecheck·build·`snapshot:check` 통과 |
-| 남은 일 | 사용자: push·PR 생성·머지 · 수동 체크리스트 실행 · 아래 결정 대기 항목 |
+| 단계 | **마일스톤 1(오버레이 셸) 완료 — PR #1 스쿼시 머지됨** [2026-09-16] |
+| main | `8aa0443 feat: 마일스톤 1 오버레이 셸 (#1)` · 머지 후 main에서 test 240·build 재확인 · `feat/m1-overlay-shell` 삭제됨 |
+| 검증 | review **Ready** · qa 최종 재검증 **전 항목 통과, 새 버그 없음** · vision **이탈 없음** |
+| 남은 일 | 사용자 수동 체크리스트 실행 · 아래 결정 대기 항목 · 2단계 착수 |
 
 ### 다음에 할 일
 
-1. 사용자 결정(머지 방식) 반영해 PR 본문 확정 → 사용자가 push·PR 생성 (`gh pr create`는 PM이 하지 않음)
-2. 사용자 수동 체크리스트(`docs/qa/M1_MANUAL_CHECKLIST.md`) 결과 수신 → 실패 항목 있으면 backend/frontend 배정
-3. 머지 후 2단계(데이터 레이어) 착수 — **IPC 스키마 backend↔frontend 선합의부터**
+1. 사용자 수동 체크리스트(`docs/qa/M1_MANUAL_CHECKLIST.md`) 결과 수신 → 실패 항목 있으면 backend/frontend 배정 (특히 **OS 수준 실클릭 통과·Space·메뉴바 반전**은 아직 사람 확인 전)
+2. 2단계(데이터 레이어) 착수 — **IPC 스키마 backend↔frontend 선합의부터**
+3. 이 로그의 머지 기록(위 표)은 **다음 작업 PR에 함께 커밋** (로그 전용 PR 만들지 않음)
 
 ## 머지 대기 PR
 
-| PR | 브랜치 | 상태 |
-|---|---|---|
-| (미생성) | `feat/m1-overlay-shell` | PR 본문 제공 완료 · 사용자 생성 대기 · 스쿼시 머지 권장(앞쪽 커밋 2개 단독 빌드 실패) |
+- 없음 (PR #1 머지 완료)
 
 ## 미해결 · 사용자 결정 대기
 
 - [ ] **머지 방식** — 스쿼시 권장 / 커밋 보존 시 커밋 정리 필요 → [history](agent-log/history/2026-09.md)
-- [ ] **그루 클릭 시 포커스 정책**(`focusable`) — 체크리스트 6번 결과 근거 → [interfaces](agent-log/interfaces.md)
-- [ ] **stretch 잎 겹침** A 그대로 / B 원본 재검토 / C 계약 명시 → [design](agent-log/design.md)
-- [ ] **정본 문구 차이 3건 + 옛 파일명** (정본은 사용자가 갱신) → [design](agent-log/design.md)
-- [ ] **Electron 30 지원 종료 · audit 7건** — 지금 업그레이드 / 5단계 infra 검토 → [stack](agent-log/stack.md)
+- [ ] **그루 클릭 시 포커스 정책**(`focusable`) — **보류 확정** [2026-09-16]. 1단계엔 클릭 동작이 없어 지금 정할 필요 없음. **2단계에서 "클릭하면 무엇을 할지"가 정해질 때 함께 결정**하고, 그때 qa가 두 설정을 실측해 근거를 만든다. 그 전까지는 현 상태(포커스를 받음) 유지 → [interfaces](agent-log/interfaces.md)
+- [x] **stretch 잎 겹침 → C 확정** [사용자 2026-09-16]: 그대로 두고 정본 3-8에 "키 삽입 순서·나중 키 우선" 계약 명시. 3단계에서 모션이 재생될 때 어색하면 그때 디자인 원본을 손본다
+- [x] **정본·브리프 정정** [사용자 허가 2026-09-16, PM이 직접 수정] — 정본 v2.6
+- [ ] **Electron 30 지원 종료 · audit 7건** — **infra 검토 중** (위험도·목표 버전·깨질 API·연쇄 범위·GitGrove 버전 정책). 결과 보고 후 사용자 판단 → [stack](agent-log/stack.md)
 - [ ] `docs/WRITING_GUIDE.md` 미생성 (원본 `docs/design/writing-guide.html`)
 - [ ] 후속 백로그 Nit-A~D · Nit-1(3단계 전) → [history](agent-log/history/2026-09.md)
 - [ ] 멀티모니터 창 위치 정책 · 창 위치 저장 — 4단계

@@ -8,8 +8,8 @@
 | **프로젝트명 / 산출물명** | **Geurus** (그루스) [확정일: 2026-09-15] |
 | **형태** | macOS 데스크톱 오버레이 앱 (Electron) |
 | 최초 작성일 | 2026-09-15 |
-| 최종 갱신일 | 2026-09-15 |
-| 문서 버전 | v2.5 |
+| 최종 갱신일 | 2026-09-16 |
+| 문서 버전 | v2.6 |
 | 관리 담당 | *미확정* |
 | 저장소 | **`github.com/sdf5771/geurus`** [확정일: 2026-09-15] |
 | **형제 프로젝트** | **GitGrove** — `github.com/sdf5771/gitgrove` (브랜드·디자인 시스템 공유) |
@@ -26,9 +26,9 @@
 ### 0-1. 정보 신뢰도 위계 ⚠️ 중요
 
 1. **실제 실행·검증 결과** (로컬 파일 확인, 실물 파싱, 직접 실행) — 최우선
-2. **공식 문서 / 브랜드 자산 원본** (`GitGrove_Character.html`, `GitGrove_라이팅_가이드.html`, herdr.dev 0.8.0)
+2. **공식 문서 / 브랜드 자산 원본** (`docs/design/character.html`, `docs/design/writing-guide.html`, herdr.dev 0.8.0)
 3. **관련 저장소 소스코드**
-4. **본 컨텍스트 문서** 및 `claude-code-transcript-schema.md`
+4. **본 컨텍스트 문서** 및 `docs/transcript-schema.md`
 5. **LLM의 사전 지식(training data)** — 변화가 빠른 영역이므로 **단독 근거로 사용 금지**
 
 > **실사례 1** — herdr docs는 Claude Code integration을 `version 6`으로 명시했으나 실제 바이너리는 **v7**을 설치했다.
@@ -122,7 +122,7 @@ Project (프로젝트 = Claude Code 세션의 cwd)
 |---|---|---|---|
 | 0 | 사전 조사 | 도구 서베이 · JSONL 스키마 실측 · 브랜드 자산 확보 · 스택 확정 | ✅ |
 | 0.5 | **디자인 시안** | 산출물 ①~⑦ 전부 수령. **디자인 완결** | ✅ [2026-09-15] |
-| 1 | **오버레이 셸** | 투명·항상위·클릭통과 창 + **트레이 아이콘** + 그루 1마리 렌더 | ⬜ 착수 전 |
+| 1 | **오버레이 셸** | 투명·항상위·클릭통과 창 + **트레이 아이콘**(`sprout` 1종 + `종료`) + 그루 1마리 정지 렌더 | ✅ [2026-09-16] PR #1 머지. **수동 검증 일부 대기** — `docs/qa/M1_MANUAL_CHECKLIST.md` |
 | 2 | **데이터 레이어** | JSONL 워처 → 서브에이전트 목록·상태 | ⬜ |
 | 3 | **모션 시스템** | 포즈 그리드 + 프레임 테이블 | ⬜ |
 | 4 | **말풍선 · 정원 패널** | 상태·툴명 표시, 다수 배치 | ⬜ |
@@ -178,7 +178,7 @@ app.dock.hide()
 
 ### 3-2. 데이터 레이어 ⚠️ 렌더링 전환과 무관하게 불변
 
-> 근거: `claude-code-transcript-schema.md` (실측, JSONL 346개 조사)
+> 근거: `docs/transcript-schema.md` (실측, JSONL 346개 조사)
 
 | 소스 | 얻는 것 |
 |---|---|
@@ -232,7 +232,7 @@ spawn     : 부모 assistant.tool_use(name=="Agent")
 
 ### 3-4. 그루 스프라이트 시스템
 
-> 원본: `GitGrove_Character.html`(캐릭터), `Geurus_모션_시스템.html`(포즈·모션 시안) — 4절 참조
+> 원본: `docs/design/character.html`(캐릭터), `docs/design/motion-system.html`(포즈·모션 시안) — 4절 참조
 
 - 그루는 이미지가 아니라 **문자 그리드 + 팔레트 + 패치**다
 - `renderSprite(grid, scale, patch)` → SVG `<rect>` 나열, `shape-rendering="crispEdges"`
@@ -243,12 +243,13 @@ spawn     : 부모 assistant.tool_use(name=="Agent")
 ```
 POSE (몸통 그리드 16×18)
   ├ LEAF  (잎 패치 — 행 1~3, LEAF_OFFSET으로 포즈 보정)   → 타입 구분
-  ├ EXPR  (눈·입 패치 — 행 8~11, 좌표 고정)              → 상태 표정
+  ├ EXPR  (눈·입 패치 — 행 8~11 + sleepy zzz는 행 4~5)   → 상태 표정
   └ fx    (프레임 한정 오버레이 픽셀 [x, y, 팔레트키])      → 땀·반짝·zzz
 ```
 
 **적용 순서**: `POSE` → `LEAF` (좌표 변환 후) → `EXPR` → `fx`
-LEAF는 행 1~3, EXPR은 행 8~11로 **영역이 겹치지 않으므로** 순서 충돌이 없다.
+LEAF는 행 1~3, EXPR은 주로 행 8~11이라 **영역이 겹치지 않으므로** 순서 충돌이 없다.
+⚠️ 예외: `sleepy`의 zzz(`5,13`·`4,14`)와 `conflict`의 땀(`8,13`·`9,13`)은 눈·입 영역 **밖**이다. 실측상 어떤 포즈·잎 조합과도 겹치지 않으며, 겹치더라도 EXPR이 LEAF 뒤라 EXPR이 이긴다. [확인일: 2026-09-15, 전 조합 검증]
 
 **포즈 4종 확정** — 시안 수령 [2026-09-15]
 
@@ -259,7 +260,8 @@ LEAF는 행 1~3, EXPR은 행 8~11로 **영역이 겹치지 않으므로** 순서
 | `stretch` | 줄기 1px 연장(`ll` 2행) · 잎 **안으로** 모임 · 발 붙음 |
 | `lean` | 상단 +1 이동, 하단은 뒤에 남음 · `flip:true` 로 반대 방향 |
 
-- 행 8~11(눈·입) 좌표는 **4종 모두 동일** → EXPR 패치가 그대로 적용됨
+- **EXPR이 덮는 눈·입 칸**은 4종 모두 동일 → EXPR 패치가 그대로 적용됨
+  ⚠️ 행 8~11 **전체**가 같은 것은 아니다. `squash`의 행 11은 1·12·14열이 다르다(몸통 윤곽 차이). 행 단위로 가정하지 말 것 [실측 2026-09-15]
 - 스쿼시&스트레치는 CSS `scaleY`가 아니라 **그리드로 구현** (비정수 배율은 픽셀을 뭉갬)
 
 **`fx` 오버레이** — 발주서에 없던 시안 측 추가. 채택.
@@ -268,7 +270,8 @@ LEAF는 행 1~3, EXPR은 행 8~11로 **영역이 겹치지 않으므로** 순서
 **성능 — 시작 시 래스터화**
 
 - `renderSprite()`는 288개 `<rect>`를 생성. 매 프레임 재생성하면 배터리를 먹는다
-- 기동 시 **포즈 4 × 잎 4 × 표정 6 × 배율 3 = 288장**을 오프스크린 캔버스에 구워두고 blit
+- 기동 시 **포즈 4 × 잎 4 × 표정 7 × 배율 3 = 336장**을 오프스크린 캔버스에 구워두고 blit
+  (표정은 `blink`를 포함해 7종이다. 1단계 구현은 배율당 아틀라스 1장으로 굽는다 — `agent-log/architecture.md`)
   (16×18짜리라 메모리는 무시할 수준. `fx`는 blit 후 개별 픽셀로 얹는다)
 - `ctx.imageSmoothingEnabled = false` 필수
 - 전부 유휴면 프레임률을 초당 2~4로 낮춘다
@@ -303,7 +306,7 @@ LEAF는 행 1~3, EXPR은 행 8~11로 **영역이 겹치지 않으므로** 순서
 **프레임 테이블 — 시안 수령 완료** [확정일: 2026-09-15]
 
 ```js
-// 원본: Geurus_모션_시스템.html 의 MOTION 상수
+// 원본: docs/design/motion-system.html 의 MOTION 상수
 idle:{ loop:true, expr:'idle', frames:[
   {pose:'stand',dx:0,dy:0,ms:200},
   {pose:'stand',dx:0,dy:-1,ms:120},
@@ -356,7 +359,7 @@ blocked(승인 대기) > 비정상 종료 > done(미확인) > working > idle
 
 ### 3-7. 말풍선 · 정원 패널 [확정일: 2026-09-15]
 
-> 원본: `Geurus_화면_구성.html`
+> 원본: `docs/design/screen-layout.html`
 
 **말풍선** — 테두리는 라운드가 아니라 **픽셀 계단**으로 깎는다.
 
@@ -394,7 +397,7 @@ const GARDEN = {
 
 ### 3-8. 타입 구분 · 빈 상태 · 트레이 [확정일: 2026-09-15]
 
-> 원본: `Geurus_마감_세트.html`
+> 원본: `docs/design/finishing-set.html`
 
 **타입 구분 — A안(잎 변주) 채택**
 
@@ -424,6 +427,14 @@ const LEAF = {
   bud:    { /* 삭제 + 봉오리 추가를 한 패치에서 */ },
 };
 ```
+
+**LEAF 패치 적용 규칙** ⚠️ 계약 [확정일: 2026-09-16]
+
+패치는 객체에 쓴 **키 순서대로** 적용하고, 같은 칸이 겹치면 **나중 키가 이긴다.**
+`stretch`(`spread:-1`)는 중심 옆 열(7↔8)을 맞바꾸므로 서로 다른 키가 한 칸으로 모인다 — `triple` (1,7) · `stem` (2,7)·(2,8) · `bud` (1,7)·(1,8).
+결과는 **원본 시안과 동일**하다(PNG 바이트 단위 대조 완료). 재구현·리팩터에서 이 순서를 바꾸면 잎 모양이 조용히 달라진다.
+> 눈에 띄는 변화: `stretch × triple`은 가운데 잎이 좌우로 뒤집히고, `stretch × bud`는 봉오리 속 짙은 픽셀이 하나로 줄어든다.
+> 3단계에서 모션이 실제로 재생될 때 어색하면 그때 디자인 원본을 손본다. [사용자 결정 2026-09-16]
 
 **포즈 보정은 `LEAF_OFFSET` 4줄로 처리한다** — LEAF를 포즈별로 나누지 않는다.
 
@@ -478,7 +489,7 @@ const TRAY = {
 
 ### 3-9. 말풍선 카피 규칙
 
-> 근거: `GitGrove_라이팅_가이드.html`
+> 근거: `docs/design/writing-guide.html`
 
 **대원칙: "상태는 그루가 표정으로."** 글은 사실만 짧게 받친다.
 
@@ -523,7 +534,7 @@ Bash 실행 중 · 40s
 
 ## 4. 브랜드 자산 (GitGrove 공유)
 
-> 원본 파일: `GitGrove_Character.html`, `GitGrove_라이팅_가이드.html`, `GitGrove_알림창.html`, `GitGrove_Geuru_UI.html`, `GitGrove_앱아이콘.png`
+> 원본 파일: `docs/design/character.html`, `docs/design/writing-guide.html` (알림창·Geuru UI·앱아이콘은 저장소에서 제외 — 9절)
 > **원본이 정본이다. 본 절은 요약이며, 충돌 시 원본을 따른다.**
 
 ### 4-1. 캐릭터 — 그루 (Geuru)
@@ -550,7 +561,7 @@ Bash 실행 중 · 40s
 | `s` | `#5fb8e6` | 땀 / 반짝 |
 | `z` | `#9fb0d8` | zzz |
 
-**표정 6종** — 눈·입 픽셀만 교체하는 패치 방식
+**표정 7종** — 눈·입 픽셀만 교체하는 패치 방식 (`sleepy`의 zzz, `conflict`의 땀은 예외적으로 눈·입 밖)
 
 `idle`(기본) · `happy`(반가워) · `think`(생각중) · `merge`(머지 완료) · `conflict`(충돌) · `sleepy`(졸려) · `blink`(깜빡)
 
@@ -686,18 +697,18 @@ font-body : 'Noto Sans KR', sans-serif                  ← 본문
 
 ## 9. 참조 현황
 
+> **파일명·경로가 바뀌었다** [2026-09-15] — 디자인 export를 저장소 `docs/design/`에 5종만 남기고 정리했다. 아래는 현재 경로 기준이다.
+
 | 자료 | 상태 |
 |---|---|
-| `claude-code-transcript-schema.md` | ✅ 실측 완료 |
-| `Geurus_모션_시스템.html` | ✅ **POSE 4종 · MOTION 7종 확정** (산출물 ①②) |
-| `Geurus_화면_구성.html` | ✅ **BUBBLE · GARDEN 확정** (산출물 ③④) |
-| `Geurus_마감_세트.html` | ✅ **AGENT_TYPE · LEAF · TRAY · 빈 상태 확정** (산출물 ⑤⑥⑦). 디자인 완결 |
-| `GEURUS_DESIGN_BRIEF.md` | ✅ 발주서 |
-| `GitGrove_Character.html` | ✅ 팔레트·표정·Do/Don't 확인 |
-| `GitGrove_라이팅_가이드.html` | ✅ 보이스 4원칙·마이크로카피 확인 |
-| `GitGrove_알림창.html` | ✅ 표정↔상태 매핑 선례 확인 |
-| `GitGrove_Geuru_UI.html` | ❌ 미확인 (634줄) |
-| `GitGrove_앱아이콘.png` | ❌ 미확인 |
+| `docs/transcript-schema.md` | ✅ 실측 완료 |
+| `docs/design/motion-system.html` | ✅ **POSE 4종 · MOTION 7종 확정** (산출물 ①②). ⚠️ `EXPR`은 **옛 버전**(think에 zzz) |
+| `docs/design/screen-layout.html` | ✅ **BUBBLE · GARDEN 확정** (산출물 ③④) |
+| `docs/design/finishing-set.html` | ✅ **AGENT_TYPE · LEAF · TRAY · 빈 상태 확정** (산출물 ⑤⑥⑦). `EXPR` 5종은 **최신**. 디자인 완결 |
+| `docs/GEURUS_DESIGN_BRIEF.md` | ✅ 발주서 |
+| `docs/design/character.html` | ✅ 팔레트·표정·Do/Don't 확인 (GitGrove 원본, `EXPR`은 옛 버전) |
+| `docs/design/writing-guide.html` | ✅ 보이스 4원칙·마이크로카피 확인 |
+| GitGrove 알림창·Geuru UI·앱아이콘 | ⬜ 저장소에서 제외(휴지통 이동). 필요하면 Claude Design 프로젝트에서 다시 가져온다 |
 | herdr docs 0.8.0 | ✅ overview/quick-start/concepts/agents/socket-api/plugins/integrations/agent-skill |
 | 〃 나머지 페이지 | ❌ (install, config, CLI reference, session-state 등) |
 
@@ -731,7 +742,8 @@ npx pixel-agents --no-terminal   # 브라우저 시각화 선례
 
 | 일자 | 버전 | 내용 |
 |---|---|---|
-| 2026-09-15 | **v2.5** | 저장소 확정 — `github.com/sdf5771/geurus` |
+| 2026-09-16 | **v2.6** | **마일스톤 1 완료**(PR #1 스쿼시 머지). 실측으로 드러난 문서 오류 정정 — ① "행 8~11 좌표 4종 동일"은 **EXPR이 덮는 칸** 기준(squash 행 11의 1·12·14열은 다름) ② `sleepy` zzz(행 4~5)·`conflict` 땀은 눈·입 영역 밖 ③ **표정 7종 · 래스터 336장**(기존 6종·288장 표기 수정). **`LEAF` 패치 적용 계약 신설** — 키 삽입 순서대로, 겹치면 나중 키 우선(`stretch`에서 실제로 겹침, 원본과 동일 결과). 디자인 원본 파일명을 정리된 `docs/design/*` 경로로 갱신 |
+| 2026-09-15 | v2.5 | 저장소 확정 — `github.com/sdf5771/geurus` |
 | 2026-09-15 | v2.4 | **최대 리스크 해소 — 서브에이전트 JSONL 실시간 flush 검증 완료.** 실행 도중 줄이 계속 추가되며 버퍼링 없음. **읽기 전용 워처 설계 확정**(훅 불필요 → `settings.json` 미수정 → Herdr·타 도구와 충돌 없음). 디렉터리 감시 필요성(`tail -F` / chokidar `add`) 기록 |
 | 2026-09-15 | v2.3 | **디자인 완결.** `LEAF` 스파스 패치 레이어 수령 — POSE 복제(16그리드) 대신 **행 1~3 패치 + `LEAF_OFFSET` 4줄**로 해결. `spread` 부호 트릭(중심선 기준 좌우 판별)으로 squash 벌어짐·stretch 모임을 값 하나로 표현. 스프라이트 구조를 **4중 레이어**(POSE→LEAF→EXPR→fx)로 정리, 래스터화 조합을 288장으로 갱신. B(발밑 배지)·C(배율 차등) 기각 사유 기록 — 특히 C는 **배율 축이 우선순위와 충돌**. zzz를 `think`에서 `sleepy`로 이동 |
 | 2026-09-15 | v2.2 | **디자인 시안 3종 수령·반영.** `POSE` 4종(stand/squash/stretch/lean)과 `MOTION` 7종 프레임 테이블 확정, 시안 측이 추가한 **`fx` 오버레이 레이어 채택**. `BUBBLE`·`GARDEN`·`AGENT_TYPE`·`TRAY` 상수 확정. 타입 구분은 **잎 변주(A안)** 채택. 캔버스 이식 주의 4가지(`1.02` 제거·배율별 굽기·패딩 포함·하단 중앙 앵커) 기록. 잎 그리드 3종은 **LEAF 패치 레이어로 재발주 예정** |
