@@ -21,12 +21,15 @@
 | 문서 | 내용 |
 |---|---|
 | `GEURUS_PROJECT_CONTEXT.md` | **정본.** 스택·설계·브랜드·판정 로직·미결 전부 |
-| `claude-code-transcript-schema.md` | JSONL 실측 스키마 |
-| `Geurus_모션_시스템.html` | `POSE` 4종 · `MOTION` 7종 (데이터 원본) |
-| `Geurus_화면_구성.html` | `BUBBLE` · `GARDEN` |
-| `Geurus_마감_세트.html` | `LEAF` · `LEAF_OFFSET` · `AGENT_TYPE` · `TRAY` |
-| `GitGrove_Character.html` | 팔레트 · 표정 · Do/Don't |
-| `GitGrove_라이팅_가이드.html` | **라이팅 가이드 — 노출 텍스트 검수 기준** |
+| `docs/transcript-schema.md` | JSONL 실측 스키마 |
+| `docs/design/motion-system.html` | `POSE` 4종 · `MOTION` 7종 (데이터 원본). ⚠️ `EXPR`은 **옛 버전**(think에 zzz) |
+| `docs/design/screen-layout.html` | `BUBBLE` · `GARDEN` |
+| `docs/design/finishing-set.html` | `LEAF` · `LEAF_OFFSET` · `AGENT_TYPE` · `TRAY` · `EXPR` **최신 5종** |
+| `docs/design/character.html` | 팔레트 · 표정 · Do/Don't |
+| `docs/design/writing-guide.html` | **라이팅 가이드 — 노출 텍스트 검수 기준** |
+| `agent-log.md` → `agent-log/` | 진행 상태·확정 계약·이력 (인덱스부터 읽는다) |
+
+> **EXPR은 키별로 원본이 다르다** — `think`·`sleepy`는 `finishing-set`(zzz는 sleepy 전용), `blink`·`merge`는 `motion-system`, 나머지는 두 파일이 동일. 상세는 `agent-log/design.md`
 
 > 이 문서들과 충돌하는 판단이 필요하면 **추측하지 말고 사용자에게 확인**한다.
 > 특히 브랜드 자산은 HTML 원본이 정본이며, 컨텍스트 문서의 요약은 참조용이다.
@@ -154,7 +157,7 @@ Noto Sans KR                : 한글 본문
 
 ### 6-4. 노출 텍스트
 
-`GitGrove_라이팅_가이드.html`을 **프로젝트 라이팅 가이드로 삼는다.** 저장소에 `docs/WRITING_GUIDE.md`로 옮겨둔다.
+`docs/design/writing-guide.html`을 **프로젝트 라이팅 가이드로 삼는다.** (`docs/WRITING_GUIDE.md`로 옮기는 작업은 아직 하지 않았다)
 
 - 해요체, 한국어 먼저, 짧게. 주어 생략
 - 상태 조각은 **가운뎃점 `·`** 으로 연결
@@ -178,7 +181,7 @@ Noto Sans KR                : 한글 본문
 
 | 순서 | 담당 | 산출물 |
 |---|---|---|
-| 1 | **backend** | 투명·프레임 없는·항상 위 창 / `app.dock.hide()` / 트레이 아이콘(종료·설정) / 클릭 통과 IPC |
+| 1 | **backend** | 투명·프레임 없는·항상 위 창 / `app.dock.hide()` / 트레이 아이콘(**`종료`만** — 설정은 이후 단계) / 클릭 통과 IPC |
 | 2 | **frontend** | 캔버스에 그루 1마리 정지 렌더 / 스프라이트 이식 / 히트박스 판정 |
 | 3 | **qa** | 아래 검증 항목 |
 | 4 | **review** → **vision** | 코드 / 브랜드 준수 |
@@ -231,7 +234,7 @@ win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 ## 8. 성능 요구
 
 - 전부 유휴일 때 **프레임률을 초당 2~4로 낮춘다.** 상시 60fps 금지 (배터리)
-- 스프라이트는 **부팅 시 래스터화**(포즈 4 × 잎 4 × 표정 6 × 배율 3 = 288장)하고 이후 blit만
+- 스프라이트는 **부팅 시 래스터화**(포즈 4 × 잎 4 × 표정 **7** × 배율 3 = **336장**)하고 이후 blit만
 - `renderSprite()`를 매 프레임 호출하지 않는다 (`<rect>` 288개 생성)
 
 ## 9. 진행 규칙
