@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geurus — 포즈 그리드 · 모션 프레임 테이블</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;700&family=DotGothic16&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-bg-deep:#0d1220; --c-bg-surface:#161d30; --c-bg-elevated:#1f273e; --c-bg-inset:#0a0f1c;
+  --c-border:#2d3551; --c-border-strong:#45506e; --c-divider:#232a44;
+  --c-gold-200:#ffd770; --c-gold-300:#f5b94a; --c-gold-400:#e6a536; --c-gold-500:#c98a22;
+  --c-gold-bg:rgba(230,165,54,.14); --c-gold-bg-soft:rgba(230,165,54,.07); --c-gold-border:rgba(230,165,54,.4);
+  --c-success:#6fcf7c; --c-info:#5fb8e6; --c-danger:#ff6b6b;
+  --c-text:#b8c0d8; --c-text-strong:#f4ecd2; --c-text-muted:#6d7798; --c-text-faint:#4a5273;
+  --font-px:'Pixelify Sans',monospace; --font-mono:'IBM Plex Mono',monospace; --font-body:'Noto Sans KR',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{background:#070b14;}
+body{font-family:var(--font-body);color:var(--c-text);-webkit-font-smoothing:antialiased;line-height:1.5;}
+svg{display:block;}
+.page{max-width:1060px;margin:0 auto;padding:56px 36px 130px;}
+
+.eyebrow{font-family:var(--font-px);font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--c-text-faint);margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.eyebrow .d{width:7px;height:7px;border-radius:50%;background:var(--c-gold-400);box-shadow:0 0 8px rgba(230,165,54,.6);}
+h1{font-family:var(--font-px);font-size:38px;color:var(--c-gold-200);letter-spacing:.5px;line-height:1.08;margin-bottom:6px;font-weight:700;}
+h1 .kr{font-family:var(--font-body);font-size:26px;font-weight:700;color:var(--c-gold-200);letter-spacing:-.01em;}
+.lede{font-size:14px;color:var(--c-text-muted);max-width:660px;line-height:1.75;margin-top:10px;}
+.lede code{font-family:var(--font-mono);font-size:12px;color:var(--c-gold-300);}
+.lede b{color:var(--c-text);}
+
+.sec{margin-top:56px;}
+.sec-label{font-family:var(--font-px);font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--c-text-faint);margin-bottom:14px;}
+.sec-h{font-family:var(--font-body);font-size:21px;font-weight:700;color:var(--c-text-strong);letter-spacing:-.01em;margin-bottom:8px;}
+.sec-d{font-size:13px;color:var(--c-text-muted);line-height:1.7;max-width:720px;margin-bottom:24px;}
+.sec-d code{font-family:var(--font-mono);font-size:12px;color:var(--c-gold-300);}
+.sec-d b{color:var(--c-text);}
+
+/* ── pose grid ── */
+.poses{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.pose{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;}
+.pose.base{border-color:var(--c-gold-border);}
+.pose-hd{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--c-divider);}
+.pose-hd .nm{font-family:var(--font-px);font-size:14px;color:var(--c-text-strong);letter-spacing:.02em;flex:1;}
+.pose-hd .tg{font-family:var(--font-px);font-size:9px;letter-spacing:.05em;border-radius:999px;padding:2px 8px;background:var(--c-bg-elevated);color:var(--c-text-muted);border:1px solid var(--c-border);}
+.pose.base .pose-hd .tg{background:var(--c-gold-400);color:#1a1206;border-color:transparent;}
+.pose-stage{padding:16px;display:flex;justify-content:center;
+  background:
+    linear-gradient(rgba(45,53,81,.35) 1px,transparent 1px) 0 0/8px 8px,
+    linear-gradient(90deg,rgba(45,53,81,.35) 1px,transparent 1px) 0 0/8px 8px,
+    var(--c-bg-deep);}
+.pose-note{padding:10px 12px;border-top:1px solid var(--c-divider);font-size:11.5px;color:var(--c-text-muted);line-height:1.5;min-height:58px;}
+.pose-note b{color:var(--c-text);}
+
+/* ── motion ── */
+.motions{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.mo{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;}
+.mo-hd{display:flex;align-items:center;gap:9px;padding:11px 13px;border-bottom:1px solid var(--c-divider);}
+.mo-hd .nm{font-family:var(--font-px);font-size:15px;color:var(--c-gold-200);letter-spacing:.02em;}
+.mo-hd .kr{font-size:12px;color:var(--c-text);}
+.mo-hd .lp{margin-left:auto;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.04em;padding:2px 7px;border-radius:999px;border:1px solid var(--c-border);color:var(--c-text-faint);}
+.mo-hd .lp.on{color:var(--c-success);border-color:rgba(111,207,124,.4);background:rgba(111,207,124,.08);}
+.mo-hd .lp.once{color:var(--c-info);border-color:rgba(95,184,230,.4);background:rgba(95,184,230,.08);}
+.mo-body{display:flex;gap:14px;padding:16px 14px;align-items:center;
+  background:
+    linear-gradient(rgba(45,53,81,.3) 1px,transparent 1px) 0 0/8px 8px,
+    linear-gradient(90deg,rgba(45,53,81,.3) 1px,transparent 1px) 0 0/8px 8px,
+    var(--c-bg-deep);}
+.mo-live{flex-shrink:0;background:rgba(10,15,28,.55);border:1px solid var(--c-border);border-radius:4px;padding:6px;}
+.mo-strip{flex:1;min-width:0;}
+.mo-strip-lbl{font-family:var(--font-mono);font-size:9px;color:var(--c-text-faint);letter-spacing:.06em;margin-bottom:6px;}
+.strip{display:flex;gap:3px;flex-wrap:wrap;}
+.fr{background:rgba(10,15,28,.6);border:1px solid var(--c-divider);border-radius:3px;padding:2px;position:relative;}
+.fr.cur{border-color:var(--c-gold-400);background:var(--c-gold-bg-soft);}
+.fr .ms{font-family:var(--font-mono);font-size:7.5px;color:var(--c-text-faint);text-align:center;margin-top:1px;}
+.fr.cur .ms{color:var(--c-gold-300);}
+.mo-meta{padding:10px 13px;border-top:1px solid var(--c-divider);font-size:11.5px;color:var(--c-text-muted);line-height:1.55;}
+.mo-meta b{color:var(--c-text);}
+.mo-meta .m{font-family:var(--font-mono);font-size:10.5px;color:var(--c-gold-300);}
+
+/* controls */
+.ctrl{display:flex;align-items:center;gap:10px;margin-bottom:20px;padding:10px 14px;background:var(--c-bg-surface);border:1px solid var(--c-divider);border-radius:6px;flex-wrap:wrap;}
+.ctrl .lb{font-family:var(--font-px);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--c-text-faint);}
+.seg{display:flex;background:var(--c-bg-inset);border:1px solid var(--c-border);border-radius:4px;overflow:hidden;}
+.seg button{padding:5px 12px;background:none;border:none;border-right:1px solid var(--c-border);color:var(--c-text-muted);font-size:12px;cursor:pointer;font-family:var(--font-body);}
+.seg button:last-child{border-right:none;}
+.seg button.on{background:var(--c-gold-bg);color:var(--c-gold-300);}
+.ctrl .re{margin-left:auto;font-family:var(--font-px);font-size:12px;letter-spacing:.03em;padding:6px 14px;border-radius:4px;border:1px solid var(--c-gold-border);background:var(--c-gold-bg);color:var(--c-gold-300);cursor:pointer;}
+.ctrl .re:hover{background:rgba(230,165,54,.22);}
+
+/* code */
+.code{background:var(--c-bg-inset);border:1px solid var(--c-border);border-radius:6px;padding:16px 18px;font-family:var(--font-mono);font-size:11.5px;line-height:1.72;color:var(--c-text);overflow-x:auto;white-space:pre;}
+.code .c{color:var(--c-text-faint);}
+.code .k{color:var(--c-info);}
+.code .s{color:var(--c-success);}
+.code .g{color:var(--c-gold-300);}
+.code .n{color:#c39ad9;}
+.copy-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.copy-row .fn{font-family:var(--font-mono);font-size:11px;color:var(--c-gold-300);flex:1;}
+.copy-row button{font-family:var(--font-body);font-size:11px;padding:4px 11px;border-radius:4px;border:1px solid var(--c-border);background:var(--c-bg-elevated);color:var(--c-text-muted);cursor:pointer;}
+.copy-row button:hover{border-color:var(--c-gold-border);color:var(--c-gold-300);}
+
+.note{display:flex;gap:11px;align-items:flex-start;margin-top:22px;padding:14px 16px;background:var(--c-gold-bg-soft);border:1px solid var(--c-gold-border);border-radius:6px;font-size:12px;color:var(--c-text);line-height:1.65;}
+.note .ng{flex-shrink:0;}
+.note b{color:var(--c-gold-300);font-family:var(--font-px);font-size:11px;letter-spacing:.04em;}
+.note code{font-family:var(--font-mono);font-size:11px;color:var(--c-gold-300);}
+
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px;}
+.rule{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;padding:13px 15px;}
+.rule h4{font-family:var(--font-px);font-size:12px;color:var(--c-text-strong);letter-spacing:.02em;margin-bottom:7px;}
+.rule p{font-size:11.5px;color:var(--c-text-muted);line-height:1.6;}
+.rule code{font-family:var(--font-mono);font-size:10.5px;color:var(--c-gold-300);}
+
+@media(max-width:900px){.poses{grid-template-columns:repeat(2,1fr);}.motions{grid-template-columns:1fr;}.rules{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow"><span class="d"></span>Geurus · 산출물 ①② — Pose &amp; Motion</div>
+  <h1>Pose Grid <span class="kr">· 모션 프레임 테이블</span></h1>
+  <div class="lede">에이전트 하나, 그루 하나. 움직임은 연속 좌표가 아니라 <b>픽셀 격자 스냅</b>이에요. 포즈 그리드 3종과 모션 7종을 <code>POSE</code> · <code>MOTION</code> JS 상수로 노출하고, 아래에서 실제로 재생돼요. 캔버스는 <code>16 × 18</code> 고정 · 팔레트는 GitGrove 그루 그대로.</div>
+
+  <!-- ① POSE -->
+  <div class="sec">
+    <div class="sec-label">산출물 ① — Pose grid</div>
+    <div class="sec-h">포즈 그리드 3종</div>
+    <div class="sec-d">몸통 그리드 자체가 다른 포즈예요. <b>눈·입 영역(행 8~11)은 네 포즈 모두 좌표가 동일</b>해서 기존 표정 패치(<code>idle·happy·think·merge·conflict·sleepy·blink</code>)가 그대로 얹힙니다. <code>lean</code>은 좌우 뒤집기로 반대 방향을 만들어요.</div>
+    <div class="poses" id="poses"></div>
+    <div class="rules">
+      <div class="rule"><h4>squash</h4><p>몸통 1px 눌림(상단이 <code>row6</code>에서 시작) · 잎이 바깥으로 벌어짐 · 하단이 부풀고 발이 넓게 벌어짐. <b>착지·시작</b>.</p></div>
+      <div class="rule"><h4>stretch</h4><p>줄기가 1px 길어져 실루엣이 위로 늘어남 · 잎이 안으로 모임 · 하단 테이퍼가 좁고 발이 붙음. <b>도약</b>.</p></div>
+      <div class="rule"><h4>lean</h4><p>잎·줄기·몸통 상단이 +1 이동, 행 8~11 고정, 하단·뒷발이 뒤로 남음. <code>scaleX(-1)</code>로 반대 방향. <b>이동 중</b>.</p></div>
+    </div>
+  </div>
+
+  <!-- ② MOTION -->
+  <div class="sec">
+    <div class="sec-label">산출물 ② — Motion frame table</div>
+    <div class="sec-h">모션 7종 · 실제 재생</div>
+    <div class="sec-d">프레임마다 <b>포즈 · 위치(<code>dx</code>/<code>dy</code>) · 표정 · 유지시간(<code>ms</code>)</b>이 정해진 테이블이에요. 부드러움은 보간이 아니라 <b>정점에서 오래 머무는 시간</b>으로 만듭니다 — 그래서 ease-in-out처럼 읽혀요. <code>dx·dy</code>는 스프라이트 픽셀 단위 정수, <code>scale</code>은 <code>spawn</code>에서만.</div>
+    <div class="ctrl">
+      <span class="lb">배율</span>
+      <div class="seg" id="scaleSeg"></div>
+      <span class="lb" style="margin-left:6px">프레임 스트립</span>
+      <div class="seg" id="stripSeg"></div>
+      <button class="re" id="replay">1회 모션 다시 재생</button>
+    </div>
+    <div class="motions" id="motions"></div>
+  </div>
+
+  <!-- DATA -->
+  <div class="sec">
+    <div class="sec-label">납품 데이터 — 복사해서 이식</div>
+    <div class="sec-h">JS 상수</div>
+    <div class="sec-d">이미지로 굽지 않았어요. 아래 상수를 그대로 앱에 옮기면 됩니다. 렌더는 문자 한 칸을 1픽셀 <code>&lt;rect&gt;</code>로 찍고 <code>shape-rendering="crispEdges"</code>.</div>
+    <div class="copy-row"><span class="fn">POSE — 16×18 문자 그리드 4종</span><button onclick="copyData('pose')">복사</button></div>
+    <div class="code" id="poseCode"></div>
+    <div class="copy-row" style="margin-top:20px"><span class="fn">MOTION — 프레임 테이블 7종</span><button onclick="copyData('motion')">복사</button></div>
+    <div class="code" id="motionCode"></div>
+    <div class="copy-row" style="margin-top:20px"><span class="fn">renderSprite() — 렌더 함수 · FX 오버레이 포함</span><button onclick="copyData('render')">복사</button></div>
+    <div class="code" id="renderCode"></div>
+  </div>
+
+  <div class="note"><span class="ng" id="ng"></span><div><b>다음 단계</b><br>우선순위 2단(<code>③ 말풍선</code> · <code>④ 정원 패널</code>)으로 이어가면 화면 구성이 완성돼요. 이 문서의 <code>POSE</code>·<code>MOTION</code>은 그 위에서 그대로 쓰입니다.</div></div>
+</div>
+
+<script>
+/* ═══════════════ 팔레트 (GitGrove 그루 — 고정) ═══════════════ */
+const PAL={'.':null,G:'#e6a536',D:'#c98a22',H:'#ffd770',L:'#6fcf7c',l:'#3f9550',E:'#10182b',W:'#f4ecd2',k:'#ff9b6b',b:'#8a5a1e',m:'#7a4412',s:'#5fb8e6',z:'#9fb0d8'};
+
+/* ═══════════════ ① POSE — 16×18, 행 8~11 좌표 동일 ═══════════════ */
+const POSE={
+  stand:[
+    "................",
+    "....LL....LL....",
+    "...LlLL..LLlL...",
+    "....LLLllLLL....",
+    ".......ll.......",
+    "....GGGGGGGG....",
+    "...HHGGGGGGGG...",
+    "..HHGGGGGGGGGG..",
+    "..GGGWEGGWEGGG..",
+    "..GkGEEGGEEGkG..",
+    "..GGGGGmmGGGGD..",
+    "..GGGGGGGGGGDD..",
+    "...GGGGGGGGDD...",
+    "...GGGGGGGDDD...",
+    "....DGGGGGGD....",
+    "....bb....bb....",
+    "................",
+    "................",
+  ],
+  squash:[
+    "................",
+    "................",
+    "..LL........LL..",
+    "..LlLL....LLlL..",
+    "...LLLLllLLLL...",
+    ".......ll.......",
+    "...HHGGGGGGGG...",
+    "..HHGGGGGGGGGG..",
+    "..GGGWEGGWEGGG..",
+    "..GkGEEGGEEGkG..",
+    "..GGGGGmmGGGGD..",
+    ".GGGGGGGGGGGGDD.",
+    ".GGGGGGGGGGGGDD.",
+    "..GGGGGGGGGDDD..",
+    "...DGGGGGGDD....",
+    "..bbb....bbb....",
+    "................",
+    "................",
+  ],
+  stretch:[
+    ".....LL..LL.....",
+    "....LlL..LLl....",
+    ".....LLllLL.....",
+    ".......ll.......",
+    ".......ll.......",
+    "....GGGGGGGG....",
+    "...HHGGGGGGGG...",
+    "..HHGGGGGGGGGG..",
+    "..GGGWEGGWEGGG..",
+    "..GkGEEGGEEGkG..",
+    "..GGGGGmmGGGGD..",
+    "..GGGGGGGGGGDD..",
+    "..GGGGGGGGGDDD..",
+    "...GGGGGGGDDD...",
+    "....DGGGGGGD....",
+    ".....bb..bb.....",
+    "................",
+    "................",
+  ],
+  lean:[
+    "................",
+    ".....LL....LL...",
+    "....LlLL..LLlL..",
+    ".....LLLllLLL...",
+    "........ll......",
+    ".....GGGGGGGG...",
+    "....HHGGGGGGGG..",
+    "...HHGGGGGGGGGG.",
+    "..GGGWEGGWEGGG..",
+    "..GkGEEGGEEGkG..",
+    "..GGGGGmmGGGGD..",
+    "..GGGGGGGGGGDD..",
+    "..GGGGGGGGDDD...",
+    "..GGGGGGGDDD....",
+    "...DGGGGGGD.....",
+    "...bb....bb.....",
+    "................",
+    "................",
+  ],
+};
+
+/* ═══════════════ 표정 패치 (기존 — 행 8~11) ═══════════════ */
+const EXPR={
+  idle:{},
+  blink:{"8,5":"G","8,6":"G","8,9":"G","8,10":"G"},
+  happy:{"8,5":"G","8,6":"G","8,9":"G","8,10":"G","9,5":"E","9,6":"E","9,9":"E","9,10":"E","9,3":"k","9,12":"k","10,5":"G","10,6":"m","10,7":"m","10,8":"m","10,9":"m","10,12":"G","11,6":"G","11,7":"m","11,8":"m","11,9":"G"},
+  think:{"8,5":"E","8,6":"E","8,9":"E","8,10":"E","9,5":"G","9,6":"G","9,9":"G","9,10":"G","10,5":"G","10,6":"G","10,7":"m","10,8":"G","8,13":"z","7,13":"z"},
+  merge:{"8,5":"H","8,6":"E","8,9":"H","8,10":"E","9,5":"E","9,6":"H","9,9":"E","9,10":"H","9,3":"k","9,12":"k","10,5":"m","10,6":"G","10,7":"m","10,8":"m","10,9":"G","10,10":"m","11,6":"m","11,7":"m","11,8":"m","11,9":"m"},
+  conflict:{"8,5":"E","8,6":"E","8,9":"E","8,10":"E","9,5":"E","9,6":"E","9,9":"E","9,10":"E","10,6":"G","10,7":"m","10,8":"m","10,9":"G","11,7":"m","11,8":"m","8,13":"s","9,13":"s"},
+  sleepy:{"8,5":"G","8,6":"G","8,9":"G","8,10":"G","9,5":"E","9,6":"E","9,9":"E","9,10":"E","10,7":"G","10,8":"m"},
+};
+
+/* ═══════════════ ② MOTION — 프레임 테이블 ═══════════════ */
+/* dx·dy = 스프라이트 픽셀 단위 정수 · ms = 유지시간
+   fx = 프레임 한정 오버레이 픽셀 [x, y, 팔레트키] — 스프라이트 좌표계 */
+const MOTION={
+  idle:{ loop:true, expr:'idle', frames:[
+    {pose:'stand',dx:0,dy:0,ms:200},
+    {pose:'stand',dx:0,dy:-1,ms:120},
+    {pose:'stand',dx:0,dy:-2,ms:100},
+    {pose:'stand',dx:0,dy:-3,ms:180},
+    {pose:'stand',dx:0,dy:-2,ms:100},
+    {pose:'stand',dx:0,dy:-1,ms:120},
+    {pose:'stand',dx:0,dy:0,ms:200},
+    {pose:'stand',dx:0,dy:0,ms:160,expr:'blink'},
+  ]},
+  working:{ loop:true, expr:'think', frames:[
+    {pose:'squash',dx:0,dy:0,ms:90},
+    {pose:'stand',dx:0,dy:-2,ms:70},
+    {pose:'stretch',dx:0,dy:-3,ms:110},
+    {pose:'stand',dx:0,dy:-2,ms:70},
+    {pose:'squash',dx:0,dy:0,ms:90},
+    {pose:'stand',dx:0,dy:-1,ms:70},
+    {pose:'stretch',dx:0,dy:-2,ms:100},
+    {pose:'stand',dx:0,dy:-1,ms:70},
+  ]},
+  tool:{ loop:true, expr:'think', frames:[
+    {pose:'lean',dx:0,dy:0,ms:150},
+    {pose:'lean',dx:1,dy:-1,ms:130},
+    {pose:'lean',dx:2,dy:0,ms:150},
+    {pose:'lean',dx:2,dy:0,ms:170},
+    {pose:'lean',dx:1,dy:-1,ms:130,flip:true},
+    {pose:'lean',dx:0,dy:0,ms:150,flip:true},
+    {pose:'lean',dx:-1,dy:-1,ms:130,flip:true},
+    {pose:'lean',dx:-2,dy:0,ms:170,flip:true},
+    {pose:'lean',dx:-1,dy:-1,ms:130},
+  ]},
+  blocked:{ loop:true, expr:'conflict', frames:[
+    {pose:'stand',dx:-1,dy:0,ms:90},
+    {pose:'squash',dx:0,dy:0,ms:70,fx:[[14,6,'s'],[15,7,'s']]},
+    {pose:'stand',dx:1,dy:0,ms:90},
+    {pose:'stand',dx:1,dy:-1,ms:70,fx:[[1,6,'s'],[0,7,'s']]},
+    {pose:'stand',dx:-1,dy:0,ms:90},
+    {pose:'squash',dx:0,dy:0,ms:70,fx:[[14,6,'s'],[15,7,'s']]},
+    {pose:'stand',dx:0,dy:0,ms:420},
+  ]},
+  done:{ loop:false, next:'idle', expr:'merge', frames:[
+    {pose:'squash',dx:0,dy:0,ms:110},
+    {pose:'stretch',dx:0,dy:-3,ms:90},
+    {pose:'stretch',dx:0,dy:-5,ms:120,fx:[[2,3,'H'],[13,4,'H']]},
+    {pose:'stand',dx:0,dy:-4,ms:100,fx:[[1,2,'H'],[14,3,'H'],[7,0,'H']]},
+    {pose:'stand',dx:0,dy:-2,ms:90,fx:[[2,1,'H'],[13,2,'H']]},
+    {pose:'squash',dx:0,dy:0,ms:130,fx:[[0,5,'H'],[15,6,'H']]},
+    {pose:'stand',dx:0,dy:-1,ms:90},
+    {pose:'stand',dx:0,dy:0,ms:300},
+  ]},
+  spawn:{ loop:false, next:'idle', expr:'happy', frames:[
+    {pose:'squash',dx:0,dy:0,ms:140,scale:1},
+    {pose:'stretch',dx:0,dy:0,ms:120,scale:1},
+    {pose:'squash',dx:0,dy:0,ms:130,scale:2},
+    {pose:'stretch',dx:0,dy:0,ms:120,scale:2},
+    {pose:'squash',dx:0,dy:0,ms:150,scale:3},
+    {pose:'stretch',dx:0,dy:-1,ms:130,scale:3,fx:[[7,0,'H']]},
+    {pose:'stand',dx:0,dy:0,ms:360,scale:3},
+  ]},
+  sleepy:{ loop:true, expr:'sleepy', frames:[
+    {pose:'squash',dx:0,dy:0,ms:520},
+    {pose:'stand',dx:0,dy:-1,ms:380,fx:[[13,4,'z']]},
+    {pose:'stand',dx:0,dy:-1,ms:420,fx:[[13,3,'z'],[14,2,'z']]},
+    {pose:'squash',dx:0,dy:0,ms:480,fx:[[14,1,'z']]},
+    {pose:'squash',dx:0,dy:0,ms:560},
+  ]},
+};
+
+const MO_META={
+  idle:{kr:'대기',d:'기존 bob 계승. 정점 <b>dy −3</b>에서 180ms 머물러 부드럽게 읽혀요. 한 바퀴 끝에 <span class="m">blink</span> 1프레임.'},
+  working:{kr:'작업 중',d:'빠른 bob + <span class="m">squash↔stretch</span> 교차로 잎이 살랑여요. 프레임 70~110ms.'},
+  tool:{kr:'툴 실행 중',d:'<span class="m">lean</span>으로 좌우 완만 이동. 끝점에서 170ms 머물고 <span class="m">flip</span>으로 방향 전환.'},
+  blocked:{kr:'승인 대기',d:'좌우 흔들림 + 땀 픽셀(<span class="m">fx</span>). 끝에 420ms 정지를 넣어 <b>시선을 끌되 산만하지 않게</b>.'},
+  done:{kr:'완료 · 미확인',d:'폴짝 + 반짝. 1회 재생 후 <span class="m">idle</span>로. 최고점 <b>dy −5</b>.'},
+  spawn:{kr:'생성',d:'<span class="m">×1 → ×2 → ×3</span> 정수 배율로 자라남. 배율마다 squash→stretch로 튕겨요.'},
+  sleepy:{kr:'장시간 유휴',d:'아주 느린 bob(380~560ms) + <span class="m">z</span> 픽셀이 위로 올라가요.'},
+};
+
+/* ═══════════════ 렌더 ═══════════════ */
+const PAD_X=5, PAD_Y=7, VB_W=16+PAD_X*2, VB_H=18+PAD_Y*2;
+function spriteRects(grid,expr,fx){
+  const patch=EXPR[expr]||{};
+  let r='';
+  for(let y=0;y<18;y++){
+    const row=grid[y]||'................';
+    for(let x=0;x<16;x++){
+      let ch=row[x];
+      const p=patch[y+','+x];
+      if(p!==undefined)ch=p;
+      const c=PAL[ch];
+      if(!c)continue;
+      r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${c}"/>`;
+    }
+  }
+  (fx||[]).forEach(([x,y,k])=>{const c=PAL[k];if(c)r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${c}"/>`;});
+  return r;
+}
+function frameSVG(fr,expr,px,opts){
+  const o=opts||{};
+  const grid=POSE[fr.pose]||POSE.stand;
+  const sc=fr.scale||1;
+  const e=fr.expr||expr;
+  const inner=spriteRects(grid,e,fr.fx);
+  // grow from ground: anchor bottom-center of the 16×18 cell
+  const gx=PAD_X+(fr.dx||0), gy=PAD_Y+(fr.dy||0);
+  const anchorX=8, anchorY=16;
+  let tf=`translate(${gx} ${gy})`;
+  if(sc!==1) tf+=` translate(${anchorX} ${anchorY}) scale(${sc}) translate(${-anchorX} ${-anchorY})`;
+  if(fr.flip) tf+=` translate(${anchorX*2} 0) scale(-1 1)`;
+  const grid8=o.showGrid?`<g opacity=".5">${gridLines()}</g>`:'';
+  return `<svg width="${VB_W*px}" height="${VB_H*px}" viewBox="0 0 ${VB_W} ${VB_H}" shape-rendering="crispEdges">${grid8}<g transform="${tf}">${inner}</g></svg>`;
+}
+function gridLines(){
+  let s='';
+  for(let i=0;i<=VB_W;i+=2)s+=`<line x1="${i}" y1="0" x2="${i}" y2="${VB_H}" stroke="#2d3551" stroke-width=".06"/>`;
+  for(let j=0;j<=VB_H;j+=2)s+=`<line x1="0" y1="${j}" x2="${VB_W}" y2="${j}" stroke="#2d3551" stroke-width=".06"/>`;
+  return s;
+}
+function poseSVG(name,px){
+  const grid=POSE[name];
+  return `<svg width="${16*px}" height="${18*px}" viewBox="0 0 16 18" shape-rendering="crispEdges">${spriteRects(grid,'idle',null)}</svg>`;
+}
+
+/* ═══════════════ ① 포즈 그리드 렌더 ═══════════════ */
+const POSE_NOTES={
+  stand:{tg:'기존 BASE',n:'기준 자세. <b>행 5~14</b>가 몸통, <b>행 15</b>가 뿌리 발.'},
+  squash:{tg:'신규',n:'상단 1px 눌림 · 잎 <b>바깥으로</b> · 하단 부풀고 발 벌어짐.'},
+  stretch:{tg:'신규',n:'줄기 1px 연장 · 잎 <b>안으로</b> 모임 · 발 붙음.'},
+  lean:{tg:'신규',n:'상단 +1 이동 · 하단 뒤에 남음 · <b>flip</b>으로 반대 방향.'},
+};
+document.getElementById('poses').innerHTML=Object.keys(POSE).map(k=>{
+  const m=POSE_NOTES[k];
+  return `<div class="pose${k==='stand'?' base':''}">
+    <div class="pose-hd"><span class="nm">${k}</span><span class="tg">${m.tg}</span></div>
+    <div class="pose-stage">${poseSVG(k,8)}</div>
+    <div class="pose-note">${m.n}</div>
+  </div>`;
+}).join('');
+
+/* ═══════════════ ② 모션 렌더 + 재생 ═══════════════ */
+let PX=5, SHOW_STRIP=true;
+const players=[];
+function buildMotions(){
+  const wrap=document.getElementById('motions');
+  wrap.innerHTML=Object.keys(MOTION).map(k=>{
+    const m=MOTION[k], meta=MO_META[k];
+    const lpCls=m.loop?'on':'once';
+    const lpTxt=m.loop?'loop':'1회 → '+m.next;
+    return `<div class="mo">
+      <div class="mo-hd"><span class="nm">${k}</span><span class="kr">${meta.kr}</span><span class="lp ${lpCls}">${lpTxt}</span></div>
+      <div class="mo-body">
+        <div class="mo-live" id="live-${k}"></div>
+        <div class="mo-strip" id="stripwrap-${k}">
+          <div class="mo-strip-lbl">FRAMES · ${m.frames.length}</div>
+          <div class="strip" id="strip-${k}"></div>
+        </div>
+      </div>
+      <div class="mo-meta">${meta.d}</div>
+    </div>`;
+  }).join('');
+  players.length=0;
+  Object.keys(MOTION).forEach(k=>{
+    const m=MOTION[k];
+    document.getElementById('strip-'+k).innerHTML=m.frames.map((fr,i)=>
+      `<div class="fr" data-i="${i}">${frameSVG(fr,m.expr,2)}<div class="ms">${fr.ms}</div></div>`).join('');
+    players.push({key:k,m,i:0,t:0,done:false,live:document.getElementById('live-'+k),strip:document.getElementById('strip-'+k)});
+    document.getElementById('stripwrap-'+k).style.display=SHOW_STRIP?'':'none';
+  });
+  drawAll();
+}
+function drawAll(){players.forEach(p=>paint(p));}
+function paint(p){
+  const fr=p.m.frames[p.i];
+  p.live.innerHTML=frameSVG(fr,p.m.expr,PX,{showGrid:true});
+  if(SHOW_STRIP){
+    const cells=p.strip.children;
+    for(let i=0;i<cells.length;i++)cells[i].classList.toggle('cur',i===p.i&&!p.done);
+  }
+}
+buildMotions();
+let last=performance.now();
+function tick(now){
+  const dt=now-last; last=now;
+  players.forEach(p=>{
+    if(p.done)return;
+    p.t+=dt;
+    const fr=p.m.frames[p.i];
+    if(p.t>=fr.ms){
+      p.t=0;
+      if(p.i+1>=p.m.frames.length){
+        if(p.m.loop){p.i=0;}
+        else{p.done=true;p.i=p.m.frames.length-1;paint(p);return;}
+      } else p.i++;
+      paint(p);
+    }
+  });
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* controls */
+const SCALES=[3,5,7];
+document.getElementById('scaleSeg').innerHTML=SCALES.map(s=>`<button data-s="${s}" class="${s===PX?'on':''}">×${s}</button>`).join('');
+document.getElementById('scaleSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;PX=+b.dataset.s;document.querySelectorAll('#scaleSeg button').forEach(x=>x.classList.toggle('on',x===b));drawAll();});
+document.getElementById('stripSeg').innerHTML=`<button data-v="1" class="on">표시</button><button data-v="0">숨김</button>`;
+document.getElementById('stripSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;SHOW_STRIP=b.dataset.v==='1';document.querySelectorAll('#stripSeg button').forEach(x=>x.classList.toggle('on',x===b));Object.keys(MOTION).forEach(k=>{document.getElementById('stripwrap-'+k).style.display=SHOW_STRIP?'':'none';});drawAll();});
+document.getElementById('replay').addEventListener('click',()=>{players.forEach(p=>{if(!p.m.loop){p.i=0;p.t=0;p.done=false;paint(p);}});});
+
+/* ═══════════════ 코드 블록 ═══════════════ */
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+const POSE_SRC=`<span class="c">// 16 × 18 고정 · 행 8~11(눈·입)은 전 포즈 좌표 동일 → 표정 패치 공용</span>
+<span class="k">const</span> <span class="g">POSE</span> = {
+${Object.keys(POSE).map(k=>`  <span class="n">${k}</span>: [\n${POSE[k].map(r=>`    <span class="s">"${r}"</span>,`).join('\n')}\n  ],`).join('\n')}
+};`;
+const MOTION_SRC=`<span class="c">// dx·dy = 픽셀 단위 정수 · ms = 유지시간 · scale은 spawn 전용(정수)
+// fx = 프레임 한정 오버레이 [x, y, 팔레트키] · flip = 좌우 반전</span>
+<span class="k">const</span> <span class="g">MOTION</span> = {
+${Object.keys(MOTION).map(k=>{
+  const m=MOTION[k];
+  const head=`  <span class="n">${k}</span>: { loop:<span class="k">${m.loop}</span>,${m.next?` next:<span class="s">'${m.next}'</span>,`:''} expr:<span class="s">'${m.expr}'</span>, frames:[`;
+  const fr=m.frames.map(f=>{
+    let s=`    { pose:<span class="s">'${f.pose}'</span>, dx:${f.dx}, dy:${f.dy}, ms:${f.ms}`;
+    if(f.scale)s+=`, scale:${f.scale}`;
+    if(f.expr)s+=`, expr:<span class="s">'${f.expr}'</span>`;
+    if(f.flip)s+=`, flip:<span class="k">true</span>`;
+    if(f.fx)s+=`, fx:[${f.fx.map(a=>`[${a[0]},${a[1]},<span class="s">'${a[2]}'</span>]`).join(',')}]`;
+    return s+' },';
+  }).join('\n');
+  return head+'\n'+fr+'\n  ]},';
+}).join('\n')}
+};`;
+const RENDER_SRC=`<span class="c">// 문자 한 칸 = 1픽셀 rect. 이미지 아님.</span>
+<span class="k">function</span> <span class="g">spriteRects</span>(grid, expr, fx) {
+  <span class="k">const</span> patch = EXPR[expr] || {};
+  <span class="k">let</span> out = <span class="s">''</span>;
+  <span class="k">for</span> (<span class="k">let</span> y = <span class="n">0</span>; y &lt; <span class="n">18</span>; y++) {
+    <span class="k">const</span> row = grid[y] || <span class="s">'................'</span>;
+    <span class="k">for</span> (<span class="k">let</span> x = <span class="n">0</span>; x &lt; <span class="n">16</span>; x++) {
+      <span class="k">let</span> ch = row[x];
+      <span class="k">const</span> p = patch[y + <span class="s">','</span> + x];   <span class="c">// 표정이 몸통을 덮음</span>
+      <span class="k">if</span> (p !== <span class="k">undefined</span>) ch = p;
+      <span class="k">const</span> c = PAL[ch];
+      <span class="k">if</span> (!c) <span class="k">continue</span>;
+      out += \`&lt;rect x="\${x}" y="\${y}" width="1.02" height="1.02" fill="\${c}"/&gt;\`;
+    }
+  }
+  (fx || []).forEach(([x, y, k]) =&gt; {          <span class="c">// 땀 · zzz · 반짝</span>
+    <span class="k">const</span> c = PAL[k];
+    <span class="k">if</span> (c) out += \`&lt;rect x="\${x}" y="\${y}" width="1.02" height="1.02" fill="\${c}"/&gt;\`;
+  });
+  <span class="k">return</span> out;
+}
+
+<span class="c">// 프레임 → transform. scale은 바닥 중앙(8,16) 기준으로 자라남</span>
+<span class="k">function</span> <span class="g">frameTransform</span>(fr, padX, padY) {
+  <span class="k">const</span> sc = fr.scale || <span class="n">1</span>, ax = <span class="n">8</span>, ay = <span class="n">16</span>;
+  <span class="k">let</span> tf = \`translate(\${padX + (fr.dx||0)} \${padY + (fr.dy||0)})\`;
+  <span class="k">if</span> (sc !== <span class="n">1</span>) tf += \` translate(\${ax} \${ay}) scale(\${sc}) translate(\${-ax} \${-ay})\`;
+  <span class="k">if</span> (fr.flip)  tf += \` translate(\${ax * <span class="n">2</span>} 0) scale(-1 1)\`;
+  <span class="k">return</span> tf;
+}
+
+<span class="c">// 재생: 경과 ms가 프레임 ms를 넘으면 다음 프레임으로 (보간 없음)</span>`;
+document.getElementById('poseCode').innerHTML=POSE_SRC;
+document.getElementById('motionCode').innerHTML=MOTION_SRC;
+document.getElementById('renderCode').innerHTML=RENDER_SRC;
+
+function plain(el){return el.innerText;}
+window.copyData=which=>{
+  const el=document.getElementById(which==='pose'?'poseCode':which==='motion'?'motionCode':'renderCode');
+  navigator.clipboard&&navigator.clipboard.writeText(plain(el));
+};
+
+/* note geuru */
+document.getElementById('ng').innerHTML=`<svg width="30" height="34" viewBox="0 0 16 18" shape-rendering="crispEdges">${spriteRects(POSE.stand,'happy',null)}</svg>`;
+</script>
+</body>
+</html>

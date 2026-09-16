@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geurus — 타입 구분 · 빈 상태 · 트레이</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;700&family=DotGothic16&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-bg-deep:#0d1220; --c-bg-surface:#161d30; --c-bg-elevated:#1f273e; --c-bg-inset:#0a0f1c;
+  --c-border:#2d3551; --c-border-strong:#45506e; --c-divider:#232a44;
+  --c-gold-200:#ffd770; --c-gold-300:#f5b94a; --c-gold-400:#e6a536; --c-gold-500:#c98a22;
+  --c-gold-bg:rgba(230,165,54,.14); --c-gold-bg-soft:rgba(230,165,54,.07); --c-gold-border:rgba(230,165,54,.4);
+  --c-success:#6fcf7c; --c-info:#5fb8e6; --c-danger:#ff6b6b;
+  --c-text:#b8c0d8; --c-text-strong:#f4ecd2; --c-text-muted:#6d7798; --c-text-faint:#4a5273;
+  --font-px:'Pixelify Sans',monospace; --font-mono:'IBM Plex Mono',monospace; --font-body:'Noto Sans KR',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{background:#070b14;}
+body{font-family:var(--font-body);color:var(--c-text);-webkit-font-smoothing:antialiased;line-height:1.5;}
+svg{display:block;}
+.page{max-width:1060px;margin:0 auto;padding:56px 36px 130px;}
+.eyebrow{font-family:var(--font-px);font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--c-text-faint);margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.eyebrow .d{width:7px;height:7px;border-radius:50%;background:var(--c-gold-400);box-shadow:0 0 8px rgba(230,165,54,.6);}
+h1{font-family:var(--font-px);font-size:38px;color:var(--c-gold-200);letter-spacing:.5px;line-height:1.08;font-weight:700;}
+h1 .kr{font-family:var(--font-body);font-size:26px;font-weight:700;letter-spacing:-.01em;}
+.lede{font-size:14px;color:var(--c-text-muted);max-width:670px;line-height:1.75;margin-top:10px;}
+.lede code{font-family:var(--font-mono);font-size:12px;color:var(--c-gold-300);}
+.lede b{color:var(--c-text);}
+.sec{margin-top:56px;}
+.sec-label{font-family:var(--font-px);font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--c-text-faint);margin-bottom:14px;}
+.sec-h{font-family:var(--font-body);font-size:21px;font-weight:700;color:var(--c-text-strong);letter-spacing:-.01em;margin-bottom:8px;}
+.sec-d{font-size:13px;color:var(--c-text-muted);line-height:1.7;max-width:730px;margin-bottom:24px;}
+.sec-d code{font-family:var(--font-mono);font-size:12px;color:var(--c-gold-300);}
+.sec-d b{color:var(--c-text);}
+.stage{background:
+  linear-gradient(rgba(45,53,81,.3) 1px,transparent 1px) 0 0/8px 8px,
+  linear-gradient(90deg,rgba(45,53,81,.3) 1px,transparent 1px) 0 0/8px 8px,
+  var(--c-bg-deep);}
+
+.card{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;}
+.card.rec{border-color:var(--c-gold-border);box-shadow:0 0 0 1px var(--c-gold-border);}
+.card-hd{display:flex;align-items:center;gap:9px;padding:11px 13px;border-bottom:1px solid var(--c-divider);}
+.card-hd .nm{font-family:var(--font-px);font-size:13px;color:var(--c-text-strong);letter-spacing:.02em;flex:1;}
+.card-hd .tg{font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--c-bg-elevated);color:var(--c-text-faint);border:1px solid var(--c-border);}
+.card-hd .tg.rec{background:var(--c-gold-400);color:#1a1206;border-color:transparent;}
+.card-nt{padding:11px 13px;border-top:1px solid var(--c-divider);font-size:11.5px;color:var(--c-text-muted);line-height:1.6;}
+.card-nt b{color:var(--c-text);}
+.card-nt .m{font-family:var(--font-mono);font-size:10.5px;color:var(--c-gold-300);}
+.card-nt .ok{color:var(--c-success);}.card-nt .no{color:var(--c-danger);}
+
+/* ⑤ type */
+.opt3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.tset{padding:18px 14px;display:flex;justify-content:space-around;align-items:flex-end;min-height:118px;}
+.tcell{display:flex;flex-direction:column;align-items:center;gap:7px;}
+.tcell .tl{font-family:var(--font-mono);font-size:9.5px;color:var(--c-text-muted);}
+.tcell.hl .tl{color:var(--c-gold-300);}
+.badge-wrap{position:relative;}
+.bdg{position:absolute;bottom:-2px;right:-4px;}
+
+/* ⑥ empty */
+.emp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.emp-body{padding:26px 18px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;min-height:186px;justify-content:center;}
+.emp-body .ttl{font-family:var(--font-body);font-size:13.5px;font-weight:700;color:var(--c-text-strong);}
+.emp-body .sub{font-size:11.5px;color:var(--c-text-muted);line-height:1.6;max-width:210px;}
+.emp-body .sub .m{font-family:var(--font-mono);font-size:10.5px;color:var(--c-danger);}
+.emp-body .cta{font-family:var(--font-px);font-size:11px;letter-spacing:.03em;padding:6px 14px;border-radius:4px;border:1px solid var(--c-gold-border);background:var(--c-gold-bg);color:var(--c-gold-300);cursor:pointer;}
+
+/* ⑦ tray */
+.tray-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.mbar{height:26px;display:flex;align-items:center;padding:0 11px;gap:12px;font-size:11.5px;}
+.mbar.dk{background:linear-gradient(180deg,#2a2f3e,#20242f);color:#e8eaf0;}
+.mbar.lt{background:linear-gradient(180deg,#dfe2ea,#eceef2);color:#1c1c1e;}
+.mbar .r{margin-left:auto;display:flex;align-items:center;gap:9px;}
+.mtray{display:flex;align-items:center;gap:4px;padding:2px 5px;border-radius:4px;}
+.mtray.on{background:rgba(120,140,200,.26);}
+.mbar.lt .mtray.on{background:rgba(0,0,0,.09);}
+.mtray .ti{width:16px;height:16px;}
+.mbar.dk .mtray .ti{filter:invert(1);}
+.mtray .tt{font-family:var(--font-mono);font-size:11px;}
+.mbar .sy{opacity:.75;font-size:10.5px;}
+.tw{border:1px solid var(--c-border);border-radius:5px;overflow:hidden;margin-bottom:8px;}
+.tz{display:flex;align-items:flex-end;gap:16px;padding:14px;justify-content:center;}
+.tz .tc{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.tz .tc .cap{font-family:var(--font-mono);font-size:9px;color:var(--c-text-faint);}
+.chip{background:var(--c-bg-inset);border:1px solid var(--c-border);border-radius:4px;padding:8px;display:flex;align-items:center;justify-content:center;}
+.chip.lt{background:#eceef2;}
+
+.code{background:var(--c-bg-inset);border:1px solid var(--c-border);border-radius:6px;padding:16px 18px;font-family:var(--font-mono);font-size:11.5px;line-height:1.72;color:var(--c-text);overflow-x:auto;white-space:pre;margin-top:16px;}
+.code .c{color:var(--c-text-faint);}.code .k{color:var(--c-info);}.code .s{color:var(--c-success);}.code .g{color:var(--c-gold-300);}.code .n{color:#c39ad9;}
+.note{display:flex;gap:11px;align-items:flex-start;margin-top:22px;padding:14px 16px;background:var(--c-gold-bg-soft);border:1px solid var(--c-gold-border);border-radius:6px;font-size:12px;color:var(--c-text);line-height:1.65;}
+.note .ng{flex-shrink:0;}
+.note b{color:var(--c-gold-300);font-family:var(--font-px);font-size:11px;letter-spacing:.04em;}
+.note code{font-family:var(--font-mono);font-size:11px;color:var(--c-gold-300);}
+@media(max-width:900px){.opt3,.emp-grid,.tray-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow"><span class="d"></span>Geurus · 산출물 ⑤⑥⑦ — 마감</div>
+  <h1>Agent Type <span class="kr">· 빈 상태 · 트레이</span></h1>
+  <div class="lede">몸통 골드·새싹 그린은 <b>고정</b>이라 색으로 타입을 구분할 수 없어요. 색을 쓰지 않는 구분 3안을 비교하고, 빈·에러 상태와 메뉴바 트레이로 마감합니다.</div>
+
+  <!-- ⑤ -->
+  <div class="sec">
+    <div class="sec-label">산출물 ⑤ — Agent type</div>
+    <div class="sec-h">타입 구분 3안 · 색을 쓰지 않는 방법</div>
+    <div class="sec-d">서브에이전트 타입(<code>frontend · explore · backend</code> 등)을 팔레트 밖 색 없이 구분해요. 세 방향을 나란히 두고 하나를 권장합니다.</div>
+    <div class="opt3" id="typeOpts"></div>
+    <div id="matrixSlot"></div>
+    <div class="code"><span class="c">// 권장: A 잎 변주 — LEAF는 EXPR과 동일한 스파스 패치 (POSE 복제 없음)</span>
+<span class="k">const</span> <span class="g">LEAF</span> = {
+  pair:   {},                                <span class="c">// 기본 두 잎 — 덮지 않음</span>
+  triple: { <span class="s">"1,5"</span>:<span class="s">"."</span>, <span class="s">"1,10"</span>:<span class="s">"."</span>, <span class="s">"2,6"</span>:<span class="s">"."</span>, <span class="s">"2,9"</span>:<span class="s">"."</span>,
+            <span class="s">"2,8"</span>:<span class="s">"L"</span>, <span class="s">"3,7"</span>:<span class="s">"L"</span>, <span class="s">"3,8"</span>:<span class="s">"l"</span> },   <span class="c">// 가운데 잎 추가</span>
+  stem:   { <span class="s">"1,4"</span>:<span class="s">"."</span>, <span class="s">"1,5"</span>:<span class="s">"."</span>, <span class="s">"1,10"</span>:<span class="s">"."</span>, <span class="s">"1,11"</span>:<span class="s">"."</span>,
+            <span class="s">"2,3"</span>:<span class="s">"."</span>, <span class="s">"2,4"</span>:<span class="s">"."</span>, <span class="s">"2,5"</span>:<span class="s">"."</span>, <span class="s">"2,6"</span>:<span class="s">"."</span>,
+            <span class="s">"2,9"</span>:<span class="s">"."</span>, <span class="s">"2,10"</span>:<span class="s">"."</span>, <span class="s">"2,11"</span>:<span class="s">"."</span>, <span class="s">"2,12"</span>:<span class="s">"."</span>,
+            <span class="s">"3,4"</span>:<span class="s">"."</span>, <span class="s">"3,5"</span>:<span class="s">"."</span>, <span class="s">"3,6"</span>:<span class="s">"."</span>, <span class="s">"3,7"</span>:<span class="s">"."</span>,
+            <span class="s">"3,8"</span>:<span class="s">"."</span>, <span class="s">"3,9"</span>:<span class="s">"."</span>, <span class="s">"3,10"</span>:<span class="s">"."</span>, <span class="s">"3,11"</span>:<span class="s">"."</span> },   <span class="c">// 잎 전지, 줄기만 남김</span>
+  bud:    { <span class="s">"1,4"</span>:<span class="s">"."</span>, <span class="s">"1,5"</span>:<span class="s">"."</span>, <span class="s">"1,10"</span>:<span class="s">"."</span>, <span class="s">"1,11"</span>:<span class="s">"."</span>,
+            <span class="s">"1,7"</span>:<span class="s">"L"</span>, <span class="s">"1,8"</span>:<span class="s">"L"</span>,
+            <span class="s">"2,3"</span>:<span class="s">"."</span>, <span class="s">"2,4"</span>:<span class="s">"."</span>, <span class="s">"2,5"</span>:<span class="s">"."</span>, <span class="s">"2,11"</span>:<span class="s">"."</span>, <span class="s">"2,12"</span>:<span class="s">"."</span>,
+            <span class="s">"2,6"</span>:<span class="s">"L"</span>, <span class="s">"2,7"</span>:<span class="s">"l"</span>, <span class="s">"2,8"</span>:<span class="s">"l"</span>, <span class="s">"2,9"</span>:<span class="s">"L"</span>,
+            <span class="s">"3,4"</span>:<span class="s">"."</span>, <span class="s">"3,5"</span>:<span class="s">"."</span>, <span class="s">"3,10"</span>:<span class="s">"."</span>, <span class="s">"3,11"</span>:<span class="s">"."</span>,
+            <span class="s">"3,7"</span>:<span class="s">"L"</span>, <span class="s">"3,8"</span>:<span class="s">"L"</span> },   <span class="c">// 봉오리 한 개</span>
+};
+
+<span class="c">// 포즈별 보정 — LEAF를 포즈별로 나누지 않고 오프셋 룰로 처리한다.
+// LEAF는 stand 기준 좌표 하나만 유지하고, 포즈가 자기 오프셋을 선언한다.
+//   dr = 캐노피 수직 이동 · dc = 수평 이동 · spread = 중심에서 좌우로 벌림</span>
+<span class="k">const</span> <span class="g">LEAF_OFFSET</span> = {
+  stand:   { dr: <span class="n">0</span>,  dc: <span class="n">0</span>, spread: <span class="n">0</span> },
+  squash:  { dr: <span class="n">1</span>,  dc: <span class="n">0</span>, spread: <span class="n">2</span> },   <span class="c">// 눌려서 잎이 바깥으로</span>
+  stretch: { dr: <span class="n">-1</span>, dc: <span class="n">0</span>, spread: <span class="n">-1</span> },  <span class="c">// 늘여서 잎이 안으로</span>
+  lean:    { dr: <span class="n">0</span>,  dc: <span class="n">1</span>, spread: <span class="n">0</span> },   <span class="c">// 기울어진 줄기 쪽으로</span>
+};
+<span class="c">// spread는 중심(열 7.5)에서 멀어지는 방향으로만 밀어 좌우 대칭을 지킨다</span>
+<span class="k">function</span> <span class="g">leafCoord</span>(r, c, off) {
+  <span class="k">const</span> side = c &lt; <span class="n">7.5</span> ? <span class="n">-1</span> : <span class="n">1</span>;
+  <span class="k">return</span> [r + off.dr, c + off.dc + side * off.spread];
+}
+
+<span class="c">// 적용 — EXPR과 같은 모양. 표정보다 아래 레이어라 눈·입과 충돌하지 않는다.</span>
+<span class="k">function</span> <span class="g">applyLeaf</span>(grid, poseKey, leafKey) {
+  <span class="k">const</span> patch = LEAF[leafKey];
+  <span class="k">if</span> (!patch) <span class="k">return</span> grid;
+  <span class="k">const</span> off = LEAF_OFFSET[poseKey] || LEAF_OFFSET.stand;
+  <span class="k">const</span> out = grid.map(row =&gt; row.split(<span class="s">''</span>));
+  <span class="k">for</span> (<span class="k">const</span> key <span class="k">in</span> patch) {
+    <span class="k">const</span> [r0, c0] = key.split(<span class="s">','</span>).map(Number);
+    <span class="k">const</span> [r, c] = leafCoord(r0, c0, off);
+    <span class="k">if</span> (r &lt; <span class="n">0</span> || r &gt; <span class="n">17</span> || c &lt; <span class="n">0</span> || c &gt; <span class="n">15</span>) <span class="k">continue</span>;
+    out[r][c] = patch[key];
+  }
+  <span class="k">return</span> out.map(cells =&gt; cells.join(<span class="s">''</span>));
+}
+
+<span class="c">// 조합 — 포즈 × 잎 × 표정이 독립 레이어로 쌓인다
+renderSprite(applyLeaf(POSE[pose], pose, leaf), expr, fx);
+
+// 16px 미만 미니 버전은 잎 변주 생략 — 판독이 안 되고 녹색 망이 부서진다
+const leafFor = (scale, type) =&gt; scale &lt; 1 ? 'pair' : AGENT_TYPE[type].leaf;
+
+// AGENT_TYPE — 타입 → 잎 패치 키 매핑 — 새싹은 그루의 정체성이라 변주 여지가 가장 크다</span>
+<span class="k">const</span> <span class="g">AGENT_TYPE</span> = {
+  frontend: { leaf: <span class="s">'pair'</span>,   <span class="c">// 기본 두 잎 — 가장 흔한 타입</span>  badge: <span class="s">'◆'</span> },
+  explore:  { leaf: <span class="s">'triple'</span>, <span class="c">// 세 잎이 부채처럼 펼쳐짐</span>     badge: <span class="s">'◇'</span> },
+  backend:  { leaf: <span class="s">'stem'</span>,   <span class="c">// 잎 없이 줄기만 — 뿌리 쪽 일</span>  badge: <span class="s">'▣'</span> },
+  test:     { leaf: <span class="s">'bud'</span>,    <span class="c">// 봉오리 한 개</span>              badge: <span class="s">'◈'</span> },
+};
+<span class="c">// 보조: 말풍선 첫 조각에 타입명을 함께 노출 — 잎만으로 헷갈릴 때의 안전장치
+//   "explore · Grep 중 · 8s"</span></div>
+  </div>
+
+  <!-- ⑥ -->
+  <div class="sec">
+    <div class="sec-label">산출물 ⑥ — Empty &amp; error</div>
+    <div class="sec-h">빈 상태 · 에러 상태</div>
+    <div class="sec-d">GitGrove 선례(<i>"아직 커밋이 없어요 / 첫 커밋을 심으면 그루가 자라요"</i>)를 이어, <b>상태는 그루 표정이 전하고 글은 사실만 짧게</b> 받칩니다. 에러는 사유 먼저·코드 뒤.</div>
+    <div class="emp-grid" id="empties"></div>
+  </div>
+
+  <!-- ⑦ -->
+  <div class="sec">
+    <div class="sec-label">산출물 ⑦ — Tray icon</div>
+    <div class="sec-h">트레이 아이콘 · 상태 3종</div>
+    <div class="sec-d">독 아이콘을 숨기므로 메뉴바가 유일한 진입점이에요. 16×16은 그루 전체를 담기엔 좁아 <b>새싹 축약형</b>을 씁니다 — 두 잎 + 줄기만. macOS <b>템플릿 이미지</b>(검정+투명)라 라이트·다크에서 자동 반전되고, 카운트는 아이콘 옆 타이틀이 맡아요.</div>
+    <div class="tray-grid" id="trays"></div>
+    <div class="code"><span class="c">// 트레이 — 템플릿 이미지(알파만 사용) · 색 금지</span>
+<span class="k">const</span> <span class="g">TRAY</span> = {
+  idle:    { glyph: <span class="s">'sprout'</span>,      title: <span class="k">null</span> },          <span class="c">// 잎 2장 · 조용함</span>
+  working: { glyph: <span class="s">'sprout-tall'</span>, title: <span class="s">'3'</span> },           <span class="c">// 줄기 1px ↑ · 활동 수</span>
+  blocked: { glyph: <span class="s">'sprout-alert'</span>,title: <span class="s">'!1'</span>, blink: <span class="k">true</span> }, <span class="c">// 잎 사이 느낌표 홈</span>
+};
+<span class="c">// 16px: 새싹만 · 32px(@2x): 같은 글리프를 2배 정수 확대
+// blocked만 1.2s 간격 깜빡임 — 나머지는 정적</span></div>
+  </div>
+
+  <div class="note"><span class="ng" id="ng"></span><div><b>세 문서로 완결</b><br><code>① 포즈 · ② 모션</code> → <code>③ 말풍선 · ④ 정원</code> → <code>⑤ 타입 · ⑥ 빈 상태 · ⑦ 트레이</code>. 모든 스프라이트는 문자 그리드 + 팔레트 + 렌더 함수이고 데이터는 JS 상수로 노출돼 있어요 — 이미지로 굽힌 곳은 없습니다.</div></div>
+</div>
+
+<script>
+const PAL={'.':null,G:'#e6a536',D:'#c98a22',H:'#ffd770',L:'#6fcf7c',l:'#3f9550',E:'#10182b',W:'#f4ecd2',k:'#ff9b6b',b:'#8a5a1e',m:'#7a4412',s:'#5fb8e6',z:'#9fb0d8'};
+/* ═══ POSE 4종 (① 문서와 동일) ═══ */
+const POSE={
+  stand:["................","....LL....LL....","...LlLL..LLlL...","....LLLllLLL....",".......ll.......","....GGGGGGGG....","...HHGGGGGGGG...","..HHGGGGGGGGGG..","..GGGWEGGWEGGG..","..GkGEEGGEEGkG..","..GGGGGmmGGGGD..","..GGGGGGGGGGDD..","...GGGGGGGGDD...","...GGGGGGGDDD...","....DGGGGGGD....","....bb....bb....","................","................"],
+  squash:["................","................","..LL........LL..","..LlLL....LLlL..","...LLLLllLLLL...",".......ll.......","...HHGGGGGGGG...","..HHGGGGGGGGGG..","..GGGWEGGWEGGG..","..GkGEEGGEEGkG..","..GGGGGmmGGGGD..",".GGGGGGGGGGGGDD.",".GGGGGGGGGGGGDD.","..GGGGGGGGGDDD..","...DGGGGGGDD....","..bbb....bbb....","................","................"],
+  stretch:[".....LL..LL.....","....LlL..LLl....",".....LLllLL.....",".......ll.......",".......ll.......","....GGGGGGGG....","...HHGGGGGGGG...","..HHGGGGGGGGGG..","..GGGWEGGWEGGG..","..GkGEEGGEEGkG..","..GGGGGmmGGGGD..","..GGGGGGGGGGDD..","..GGGGGGGGGDDD..","...GGGGGGGDDD...","....DGGGGGGD....",".....bb..bb.....","................","................"],
+  lean:["................",".....LL....LL...","....LlLL..LLlL..",".....LLLllLLL...","........ll......",".....GGGGGGGG...","....HHGGGGGGGG..","...HHGGGGGGGGGG.","..GGGWEGGWEGGG..","..GkGEEGGEEGkG..","..GGGGGmmGGGGD..","..GGGGGGGGGGDD..","..GGGGGGGGDDD...","..GGGGGGGDDD....","...DGGGGGGD.....","...bb....bb.....","................","................"],
+};
+const STAND=POSE.stand;
+
+/* ═══ ⑤-A LEAF — 스파스 패치 레이어 ═══
+   EXPR이 행 8~11(눈·입)을 덮듯 LEAF는 행 1~3(잎)을 덮는다.
+   · stand 기준 좌표 하나만 유지 → 포즈는 LEAF_OFFSET으로 보정 (LEAF 분리 없음)
+   · "." = 지우기, "L"/"l" = 잎 픽셀. 줄기·몸통·표정은 건드리지 않는다. */
+const LEAF={
+  pair:{},
+  triple:{"1,5":".","1,10":".","2,6":".","2,9":".","2,8":"L","3,7":"L","3,8":"l"},
+  stem:{"1,4":".","1,5":".","1,10":".","1,11":".",
+        "2,3":".","2,4":".","2,5":".","2,6":".","2,9":".","2,10":".","2,11":".","2,12":".",
+        "3,4":".","3,5":".","3,6":".","3,7":".","3,8":".","3,9":".","3,10":".","3,11":"."},
+  bud:{"1,4":".","1,5":".","1,10":".","1,11":".","1,7":"L","1,8":"L",
+       "2,3":".","2,4":".","2,5":".","2,11":".","2,12":".",
+       "2,6":"L","2,7":"l","2,8":"l","2,9":"L",
+       "3,4":".","3,5":".","3,10":".","3,11":".","3,7":"L","3,8":"L"},
+};
+/* 포즈별 보정 — dr 수직 · dc 수평 · spread 좌우 벌림(중심 7.5 기준) */
+const LEAF_OFFSET={
+  stand:{dr:0,dc:0,spread:0},
+  squash:{dr:1,dc:0,spread:2},
+  stretch:{dr:-1,dc:0,spread:-1},
+  lean:{dr:0,dc:1,spread:0},
+};
+function leafCoord(r,c,off){
+  const side=c<7.5?-1:1;
+  return [r+off.dr, c+off.dc+side*off.spread];
+}
+function applyLeaf(grid,poseKey,leafKey){
+  const patch=LEAF[leafKey];
+  if(!patch) return grid;
+  const off=LEAF_OFFSET[poseKey]||LEAF_OFFSET.stand;
+  const out=grid.map(row=>row.split(''));
+  for(const key in patch){
+    const [r0,c0]=key.split(',').map(Number);
+    const [r,c]=leafCoord(r0,c0,off);
+    if(r<0||r>17||c<0||c>15) continue;
+    out[r][c]=patch[key];
+  }
+  return out.map(cells=>cells.join(''));
+}
+/* 16px 미만 미니 버전은 잎 변주 생략 */
+const leafFor=(scale,leafKey)=>scale<1?'pair':leafKey;
+const EXPR={
+  idle:{},
+  happy:{"8,5":"G","8,6":"G","8,9":"G","8,10":"G","9,5":"E","9,6":"E","9,9":"E","9,10":"E","9,3":"k","9,12":"k","10,5":"G","10,6":"m","10,7":"m","10,8":"m","10,9":"m","10,12":"G","11,6":"G","11,7":"m","11,8":"m","11,9":"G"},
+  think:{"8,5":"E","8,6":"E","8,9":"E","8,10":"E","9,5":"G","9,6":"G","9,9":"G","9,10":"G","10,5":"G","10,6":"G","10,7":"m","10,8":"G"},
+  conflict:{"8,5":"E","8,6":"E","8,9":"E","8,10":"E","9,5":"E","9,6":"E","9,9":"E","9,10":"E","10,6":"G","10,7":"m","10,8":"m","10,9":"G","11,7":"m","11,8":"m","8,13":"s","9,13":"s"},
+  sleepy:{"8,5":"G","8,6":"G","8,9":"G","8,10":"G","9,5":"E","9,6":"E","9,9":"E","9,10":"E","10,7":"G","10,8":"m","5,13":"z","4,14":"z"},
+};
+function gridWithLeaf(leafKey,poseKey){
+  const pk=poseKey||'stand';
+  return applyLeaf(POSE[pk]||POSE.stand,pk,leafKey);
+}
+function rects(grid,expr){
+  const p=EXPR[expr]||{};let r='';
+  for(let y=0;y<18;y++){const row=grid[y]||'................';
+    for(let x=0;x<16;x++){let ch=row[x];const q=p[y+','+x];if(q!==undefined)ch=q;const c=PAL[ch];if(!c)continue;
+      r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${c}"/>`;}}
+  return r;
+}
+function geuru(px,expr,leafKey,poseKey){
+  return `<svg width="${16*px}" height="${18*px}" viewBox="0 0 16 18" shape-rendering="crispEdges">${rects(gridWithLeaf(leafKey,poseKey),expr||'idle')}</svg>`;
+}
+
+/* ⑤ 3안 */
+const TYPES=[['frontend','pair'],['explore','triple'],['backend','stem'],['test','bud']];
+// A — 잎 변주
+const aSet=TYPES.map(([n,l],i)=>`<div class="tcell${i===1?' hl':''}">${geuru(3,'idle',l,'stand')}<span class="tl">${n}</span></div>`).join('');
+// B — 발밑 배지
+const BADGE={frontend:'◆',explore:'◇',backend:'▣',test:'◈'};
+const bSet=TYPES.map(([n],i)=>`<div class="tcell${i===1?' hl':''}">
+  <div class="badge-wrap">${geuru(3,'idle','pair')}
+    <span class="bdg"><svg width="14" height="14" viewBox="0 0 14 14" shape-rendering="crispEdges">
+      <rect x="0" y="0" width="14" height="14" rx="3" fill="#1f273e" stroke="#45506e"/>
+      <text x="7" y="10.5" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="8" fill="#f5b94a">${BADGE[n]}</text></svg></span>
+  </div><span class="tl">${n}</span></div>`).join('');
+// C — 배율 차등 (spawnDepth)
+const cSet=[['depth 0',3],['depth 1',2],['depth 2',1]].map(([n,s],i)=>
+  `<div class="tcell${i===0?' hl':''}">${geuru(s,'idle','pair')}<span class="tl">${n} · ×${s}</span></div>`).join('');
+
+document.getElementById('typeOpts').innerHTML=`
+  <div class="card rec">
+    <div class="card-hd"><span class="nm">A · 잎 변주</span><span class="tg rec">추천</span></div>
+    <div class="tset stage">${aSet}</div>
+    <div class="card-nt"><span class="ok">✓</span> 두 잎 / 세 잎 / 줄기만 / 봉오리 — <b>POSE 복제가 아니라 <span class="m">LEAF</span> 스파스 패치</b>예요. <span class="m">EXPR</span>이 행 8~11을 덮듯 행 1~3만 덮고, 포즈별 차이는 <span class="m">LEAF_OFFSET</span> 한 줄로 보정해 4종 전부와 조합됩니다.</div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="nm">B · 발밑 배지</span><span class="tg">보조</span></div>
+    <div class="tset stage">${bSet}</div>
+    <div class="card-nt">타입이 늘어도 무한 확장돼요. 다만 <span class="no">×2에서 8px 글리프가 뭉개지고</span> 그루 실루엣 밖에 요소가 붙어 정원이 산만해져요. <b>A와 병행</b>해 툴팁 대체로 쓰기 좋아요.</div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="nm">C · 배율 차등</span><span class="tg">겸용 불가</span></div>
+    <div class="tset stage">${cSet}</div>
+    <div class="card-nt">중첩 깊이(<span class="m">spawnDepth</span>)를 정수 배율로 — 계층은 잘 보여요. 하지만 배율은 이미 <b>우선순위(승인 대기 ×3)</b>가 쓰는 축이라 <span class="no">타입과 겸용하면 충돌</span>해요. 깊이 전용으로만.</div>
+  </div>`;
+
+/* ⑥ 빈 상태 */
+const EMPTIES=[
+  {nm:'에이전트 없음',tg:'empty',ex:'sleepy',ttl:'아직 일하는 그루가 없어요',sub:'Claude Code가 작업을 위임하면 여기서 자라나요.',cta:null},
+  {nm:'Claude Code 미실행',tg:'empty',ex:'sleepy',ttl:'Claude Code를 찾지 못했어요',sub:'터미널에서 <span class="m" style="color:var(--c-gold-300)">claude</span> 를 실행하면 자동으로 연결돼요.',cta:'연결 다시 확인'},
+  {nm:'로그를 읽을 수 없음',tg:'error',ex:'conflict',ttl:'로그를 읽을 수 없어요',sub:'권한이 필요해요 · <span class="m">EACCES</span>',cta:'권한 열기'},
+];
+document.getElementById('empties').innerHTML=EMPTIES.map(e=>`
+  <div class="card">
+    <div class="card-hd"><span class="nm">${e.nm}</span><span class="tg">${e.tg}</span></div>
+    <div class="emp-body stage">
+      ${geuru(4,e.ex,'pair')}
+      <div class="ttl">${e.ttl}</div>
+      <div class="sub">${e.sub}</div>
+      ${e.cta?`<button class="cta">${e.cta}</button>`:''}
+    </div>
+  </div>`).join('');
+
+/* ⑦ 트레이 — 새싹 축약형 템플릿 글리프 */
+const TRAY_GLYPH={
+  sprout:[
+    "................",
+    "................",
+    "................",
+    "....##....##....",
+    "...####..####...",
+    "....####.###....",
+    ".....#.##.#.....",
+    "......####......",
+    ".......##.......",
+    ".......##.......",
+    ".......##.......",
+    "......####......",
+    ".....######.....",
+    "................",
+    "................",
+    "................",
+  ],
+  'sprout-tall':[
+    "................",
+    "....##....##....",
+    "...####..####...",
+    "....####.###....",
+    ".....#.##.#.....",
+    "......####......",
+    ".......##.......",
+    ".......##.......",
+    ".......##.......",
+    ".......##.......",
+    ".......##.......",
+    "......####......",
+    ".....######.....",
+    "................",
+    "................",
+    "................",
+  ],
+  'sprout-alert':[
+    "................",
+    "................",
+    "...##..##..##...",
+    "..####.##.####..",
+    "...###.##.###...",
+    "....#..##..#....",
+    "......####......",
+    ".......##.......",
+    ".......##.......",
+    ".......##.......",
+    "......####......",
+    ".....######.....",
+    "................",
+    "................",
+    "................",
+    "................",
+  ],
+};
+function trayGlyph(key,px,forURI){
+  const g=TRAY_GLYPH[key];let r='';
+  for(let y=0;y<16;y++)for(let x=0;x<16;x++){if(g[y][x]==='#')r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="#000"/>`;}
+  const ns=forURI?' xmlns="http://www.w3.org/2000/svg"':'';
+  return `<svg${ns} width="${16*px}" height="${16*px}" viewBox="0 0 16 16" shape-rendering="crispEdges">${r}</svg>`;
+}
+function trayDataURI(key){
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(trayGlyph(key,1,true));
+}
+const TRAYS=[
+  {nm:'idle',tg:'조용함',g:'sprout',title:'',nt:'잎 2장 + 짧은 줄기. 카운트 없이 <b>아이콘만</b>. 정적.'},
+  {nm:'working',tg:'작업 중',g:'sprout-tall',title:'3',nt:'줄기가 <b>1px 길어져</b> 자라는 중임을 알려요. 옆 숫자는 활동 그루 수.'},
+  {nm:'blocked',tg:'승인 대기',g:'sprout-alert',title:'!1',nt:'잎 사이에 <b>느낌표 홈</b>이 파여요. <b>1.2s 깜빡임</b>으로 유일하게 시선을 끕니다.'},
+];
+document.getElementById('trays').innerHTML=TRAYS.map(t=>{
+  const uri=trayDataURI(t.g);
+  return `<div class="card${t.nm==='blocked'?' rec':''}">
+    <div class="card-hd"><span class="nm">${t.nm}</span><span class="tg${t.nm==='blocked'?' rec':''}">${t.tg}</span></div>
+    <div style="padding:14px 13px 4px">
+      <div class="tw"><div class="mbar dk"><b style="font-weight:600">Geurus</b><span class="r"><span class="mtray on"><img class="ti" src="${uri}">${t.title?`<span class="tt">${t.title}</span>`:''}</span><span class="sy">7:24</span></span></div></div>
+      <div class="tw"><div class="mbar lt"><b style="font-weight:600">Geurus</b><span class="r"><span class="mtray"><img class="ti" src="${uri}">${t.title?`<span class="tt">${t.title}</span>`:''}</span><span class="sy">7:24</span></span></div></div>
+    </div>
+    <div class="tz">
+      <div class="tc"><div class="chip"><span style="filter:invert(1)">${trayGlyph(t.g,1)}</span></div><div class="cap">16 다크</div></div>
+      <div class="tc"><div class="chip lt">${trayGlyph(t.g,1)}</div><div class="cap">16 라이트</div></div>
+      <div class="tc"><div class="chip"><span style="filter:invert(1)">${trayGlyph(t.g,2)}</span></div><div class="cap">32 @2x</div></div>
+      <div class="tc"><div class="chip"><span style="filter:invert(1)">${trayGlyph(t.g,5)}</span></div><div class="cap">형태</div></div>
+    </div>
+    <div class="card-nt">${t.nt}</div>
+  </div>`;
+}).join('');
+
+/* 조합 매트릭스 + 미니 폴백 */
+const MX_POSES=['stand','squash','stretch','lean'];
+const MX_LEAVES=[['pair','frontend'],['triple','explore'],['stem','backend'],['bud','test']];
+const mxCell='text-align:center;padding:9px 0;border-bottom:1px solid var(--c-divider);background:linear-gradient(rgba(45,53,81,.28) 1px,transparent 1px) 0 0/8px 8px,linear-gradient(90deg,rgba(45,53,81,.28) 1px,transparent 1px) 0 0/8px 8px,var(--c-bg-deep)';
+document.getElementById('matrixSlot').innerHTML=`
+<div style="display:grid;grid-template-columns:1.55fr 1fr;gap:14px;margin-top:14px">
+  <div class="card">
+    <div class="card-hd"><span class="nm">POSE × LEAF</span><span class="tg">16 조합</span></div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr><th style="width:84px"></th>${MX_POSES.map(p=>`<th style="font-family:var(--font-mono);font-size:10px;color:var(--c-gold-300);font-weight:400;padding:9px 0;border-bottom:1px solid var(--c-divider)">${p}</th>`).join('')}</tr></thead>
+      <tbody>${MX_LEAVES.map(([lf,nm])=>`<tr>
+        <td style="padding:7px 12px;border-bottom:1px solid var(--c-divider)"><div style="font-family:var(--font-mono);font-size:10.5px;color:var(--c-text)">${lf}</div><div style="font-family:var(--font-mono);font-size:9px;color:var(--c-text-faint)">${nm}</div></td>
+        ${MX_POSES.map(p=>`<td style="${mxCell}"><div style="display:flex;justify-content:center">${geuru(3,'idle',lf,p)}</div></td>`).join('')}
+      </tr>`).join('')}</tbody>
+    </table>
+    <div class="card-nt">잎 패치는 <b>행 1~3만</b> 건드리고 줄기·몸통은 포즈 원본이라, <code style="font-family:var(--font-mono);color:var(--c-gold-300)">squash</code>의 눌린 실루엣과 <code style="font-family:var(--font-mono);color:var(--c-gold-300)">stretch</code>의 늘어난 줄기가 잎 변주와 무관하게 유지돼요.</div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="nm">오프셋 룰</span><span class="tg">포즈 보정</span></div>
+    <div style="padding:14px 14px 4px">
+      <div style="font-family:var(--font-mono);font-size:10.5px;color:var(--c-text-muted);line-height:1.9">
+        ${Object.entries({stand:[0,0,0],squash:[1,0,2],stretch:[-1,0,-1],lean:[0,1,0]}).map(([k,[dr,dc,sp]])=>`<div style="display:flex;gap:8px"><span style="width:58px;color:var(--c-gold-300)">${k}</span><span>dr ${dr>=0?'+':''}${dr}</span><span>dc ${dc>=0?'+':''}${dc}</span><span style="color:${sp?'var(--c-success)':'var(--c-text-faint)'}">spread ${sp>=0?'+':''}${sp}</span></div>`).join('')}
+      </div>
+      <div style="margin-top:12px;font-size:11.5px;color:var(--c-text-muted);line-height:1.6"><b style="color:var(--c-text)">spread</b>는 중심(열 7.5)에서 <b style="color:var(--c-text)">멀어지는 방향으로만</b> 밀어 좌우 대칭을 지켜요. squash는 <span style="color:var(--c-success)">+2</span>로 벌리고 stretch는 <span style="color:var(--c-success)">−1</span>로 모읍니다 — LEAF를 포즈별로 나누지 않고 이 한 줄로 끝나요.</div>
+    </div>
+    <div class="card-nt" style="margin-top:8px"><b>16px 미만 미니</b>는 잎 변주를 생략해요 — 아래 오른쪽처럼 판독이 안 되고 녹색 망만 부서집니다.
+      <div style="display:flex;align-items:flex-end;gap:14px;margin-top:10px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:5px">${geuru(2,'idle','triple','stand')}<span style="font-family:var(--font-mono);font-size:9px;color:var(--c-text-faint)">×2 · triple</span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:5px">${geuru(1,'idle','pair','stand')}<span style="font-family:var(--font-mono);font-size:9px;color:var(--c-success)">×1 · pair 폴백</span></div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:5px">${geuru(1,'idle','triple','stand')}<span style="font-family:var(--font-mono);font-size:9px;color:var(--c-danger)">×1 · triple ✗</span></div>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+document.getElementById('ng').innerHTML=geuru(2,'happy','pair');
+</script>
+</body>
+</html>

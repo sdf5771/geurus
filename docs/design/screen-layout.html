@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geurus — 말풍선 · 정원 패널</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;700&family=DotGothic16&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --c-bg-deep:#0d1220; --c-bg-surface:#161d30; --c-bg-elevated:#1f273e; --c-bg-inset:#0a0f1c;
+  --c-border:#2d3551; --c-border-strong:#45506e; --c-divider:#232a44;
+  --c-gold-200:#ffd770; --c-gold-300:#f5b94a; --c-gold-400:#e6a536; --c-gold-500:#c98a22;
+  --c-gold-bg:rgba(230,165,54,.14); --c-gold-bg-soft:rgba(230,165,54,.07); --c-gold-border:rgba(230,165,54,.4);
+  --c-success:#6fcf7c; --c-info:#5fb8e6; --c-danger:#ff6b6b;
+  --c-text:#b8c0d8; --c-text-strong:#f4ecd2; --c-text-muted:#6d7798; --c-text-faint:#4a5273;
+  --font-px:'Pixelify Sans',monospace; --font-mono:'IBM Plex Mono',monospace; --font-body:'Noto Sans KR',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{background:#070b14;}
+body{font-family:var(--font-body);color:var(--c-text);-webkit-font-smoothing:antialiased;line-height:1.5;}
+svg{display:block;}
+.page{max-width:1060px;margin:0 auto;padding:56px 36px 130px;}
+.eyebrow{font-family:var(--font-px);font-size:11px;text-transform:uppercase;letter-spacing:.16em;color:var(--c-text-faint);margin-bottom:10px;display:flex;align-items:center;gap:9px;}
+.eyebrow .d{width:7px;height:7px;border-radius:50%;background:var(--c-gold-400);box-shadow:0 0 8px rgba(230,165,54,.6);}
+h1{font-family:var(--font-px);font-size:38px;color:var(--c-gold-200);letter-spacing:.5px;line-height:1.08;font-weight:700;}
+h1 .kr{font-family:var(--font-body);font-size:26px;font-weight:700;letter-spacing:-.01em;}
+.lede{font-size:14px;color:var(--c-text-muted);max-width:660px;line-height:1.75;margin-top:10px;}
+.lede code{font-family:var(--font-mono);font-size:12px;color:var(--c-gold-300);}
+.lede b{color:var(--c-text);}
+.sec{margin-top:56px;}
+.sec-label{font-family:var(--font-px);font-size:10px;text-transform:uppercase;letter-spacing:.16em;color:var(--c-text-faint);margin-bottom:14px;}
+.sec-h{font-family:var(--font-body);font-size:21px;font-weight:700;color:var(--c-text-strong);letter-spacing:-.01em;margin-bottom:8px;}
+.sec-d{font-size:13px;color:var(--c-text-muted);line-height:1.7;max-width:730px;margin-bottom:24px;}
+.sec-d code{font-family:var(--font-mono);font-size:12px;color:var(--c-gold-300);}
+.sec-d b{color:var(--c-text);}
+
+/* stage helper */
+.stage{background:
+  linear-gradient(rgba(45,53,81,.3) 1px,transparent 1px) 0 0/8px 8px,
+  linear-gradient(90deg,rgba(45,53,81,.3) 1px,transparent 1px) 0 0/8px 8px,
+  var(--c-bg-deep);}
+
+/* ── ③ bubble ── */
+.bub-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.card{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;}
+.card-hd{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--c-divider);}
+.card-hd .nm{font-family:var(--font-px);font-size:13px;color:var(--c-text-strong);letter-spacing:.02em;flex:1;}
+.card-hd .tg{font-family:var(--font-mono);font-size:9px;letter-spacing:.04em;padding:2px 7px;border-radius:999px;background:var(--c-bg-elevated);color:var(--c-text-faint);border:1px solid var(--c-border);}
+.card-hd .tg.w{color:var(--c-danger);border-color:rgba(255,107,107,.4);background:rgba(255,107,107,.08);}
+.card-hd .tg.s{color:var(--c-success);border-color:rgba(111,207,124,.4);background:rgba(111,207,124,.08);}
+.card-body{padding:24px 18px;display:flex;align-items:center;justify-content:center;min-height:132px;}
+.card-note{padding:10px 13px;border-top:1px solid var(--c-divider);font-size:11.5px;color:var(--c-text-muted);line-height:1.55;}
+.card-note b{color:var(--c-text);}
+.card-note .m{font-family:var(--font-mono);font-size:10.5px;color:var(--c-gold-300);}
+
+/* tail direction demo */
+.tail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.tail-cell{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;}
+.tail-cell .lb{padding:8px 11px;font-family:var(--font-mono);font-size:10px;color:var(--c-gold-300);border-bottom:1px solid var(--c-divider);letter-spacing:.04em;}
+.tail-cell .bd{padding:16px 12px;display:flex;align-items:center;justify-content:center;min-height:128px;}
+
+/* width rules */
+.wrule{display:flex;flex-direction:column;gap:12px;}
+.wrow{display:flex;align-items:center;gap:14px;padding:12px 14px;background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;}
+.wrow .wl{width:78px;flex-shrink:0;font-family:var(--font-mono);font-size:10.5px;color:var(--c-gold-300);}
+.wrow .wd{font-size:11.5px;color:var(--c-text-muted);flex:1;}
+.wrow .wd b{color:var(--c-text);}
+
+/* ── ④ garden panel ── */
+.gdn-wrap{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.gdn-shot{background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;}
+.gdn-shot .hd{display:flex;align-items:center;gap:9px;padding:10px 13px;border-bottom:1px solid var(--c-divider);}
+.gdn-shot .hd .nm{font-family:var(--font-px);font-size:13px;color:var(--c-text-strong);flex:1;letter-spacing:.02em;}
+.gdn-shot .hd .sz{font-family:var(--font-mono);font-size:9.5px;color:var(--c-text-faint);}
+.gdn-shot .bd{padding:22px;display:flex;align-items:center;justify-content:center;
+  background:
+    repeating-conic-gradient(#11162400 0% 25%,#11162466 0% 50%) 0 0/16px 16px,
+    linear-gradient(135deg,#0a0f1c,#141b2e);}
+.gdn-shot .nt{padding:10px 13px;border-top:1px solid var(--c-divider);font-size:11.5px;color:var(--c-text-muted);line-height:1.55;}
+.gdn-shot .nt b{color:var(--c-text);}
+
+/* the panel itself */
+.panel{width:360px;position:relative;border-radius:6px;}
+.panel.solid{background:rgba(22,29,48,.86);border:1px solid var(--c-border);box-shadow:0 8px 24px rgba(0,0,0,.45),inset 0 1px 0 rgba(244,236,210,.05);backdrop-filter:blur(10px);}
+.panel.clear{background:transparent;border:1px solid transparent;}
+.panel.clear .p-grip{background:rgba(22,29,48,.72);border:1px solid var(--c-border);border-radius:6px;backdrop-filter:blur(10px);}
+.panel.clear .p-floor{background:transparent;}
+.p-grip{display:flex;align-items:center;gap:8px;padding:6px 10px;cursor:grab;}
+.panel.solid .p-grip{border-bottom:1px solid var(--c-divider);}
+.p-grip .dots{display:flex;flex-direction:column;gap:2px;flex-shrink:0;}
+.p-grip .dots i{display:block;width:14px;height:2px;background:var(--c-border-strong);border-radius:1px;}
+.p-grip .ttl{font-family:var(--font-px);font-size:12px;color:var(--c-gold-200);letter-spacing:.02em;}
+.p-grip .cnt{font-family:var(--font-mono);font-size:10px;color:var(--c-text-faint);}
+.p-grip .act{margin-left:auto;display:flex;gap:6px;}
+.p-grip .act i{display:block;width:8px;height:8px;border-radius:50%;background:var(--c-border-strong);}
+.p-floor{padding:14px 12px 12px;display:flex;flex-direction:column;gap:14px;}
+
+/* project bed = 화단 */
+.bed{position:relative;}
+.bed-lbl{display:flex;align-items:center;gap:7px;margin-bottom:6px;}
+.bed-lbl .pn{font-family:var(--font-mono);font-size:10.5px;color:var(--c-text);}
+.bed-lbl .pc{font-family:var(--font-mono);font-size:9.5px;color:var(--c-text-faint);}
+.bed-lbl .ln{flex:1;height:1px;background:var(--c-divider);}
+.bed-soil{position:relative;display:flex;align-items:flex-end;gap:4px;padding:0 4px 7px;border-bottom:2px solid rgba(138,90,30,.45);min-height:52px;}
+.bed-soil::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;background:rgba(111,207,124,.35);}
+.slot{position:relative;flex-shrink:0;}
+.slot.pri::before{content:'';position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);width:80%;height:3px;border-radius:2px;background:var(--c-danger);box-shadow:0 0 6px rgba(255,107,107,.5);}
+.slot.done::before{content:'';position:absolute;left:50%;bottom:-3px;transform:translateX(-50%);width:70%;height:3px;border-radius:2px;background:var(--c-success);}
+.more{flex-shrink:0;align-self:flex-end;margin-bottom:3px;font-family:var(--font-mono);font-size:10px;color:var(--c-text-muted);background:var(--c-bg-elevated);border:1px solid var(--c-border);border-radius:4px;padding:3px 7px;}
+
+/* priority list */
+.prio{display:flex;flex-direction:column;gap:0;background:var(--c-bg-surface);border:1px solid var(--c-border);border-radius:6px;overflow:hidden;}
+.prio-row{display:flex;align-items:center;gap:11px;padding:10px 14px;border-bottom:1px solid var(--c-divider);}
+.prio-row:last-child{border-bottom:none;}
+.prio-row .rk{font-family:var(--font-px);font-size:13px;color:var(--c-gold-300);width:16px;flex-shrink:0;}
+.prio-row .st{font-family:var(--font-mono);font-size:11px;width:92px;flex-shrink:0;}
+.prio-row .gu{flex-shrink:0;}
+.prio-row .ds{font-size:11.5px;color:var(--c-text-muted);flex:1;}
+.prio-row .ds b{color:var(--c-text);}
+
+.note{display:flex;gap:11px;align-items:flex-start;margin-top:22px;padding:14px 16px;background:var(--c-gold-bg-soft);border:1px solid var(--c-gold-border);border-radius:6px;font-size:12px;color:var(--c-text);line-height:1.65;}
+.note .ng{flex-shrink:0;}
+.note b{color:var(--c-gold-300);font-family:var(--font-px);font-size:11px;letter-spacing:.04em;}
+.note code{font-family:var(--font-mono);font-size:11px;color:var(--c-gold-300);}
+.code{background:var(--c-bg-inset);border:1px solid var(--c-border);border-radius:6px;padding:16px 18px;font-family:var(--font-mono);font-size:11.5px;line-height:1.72;color:var(--c-text);overflow-x:auto;white-space:pre;margin-top:14px;}
+.code .c{color:var(--c-text-faint);}.code .k{color:var(--c-info);}.code .s{color:var(--c-success);}.code .g{color:var(--c-gold-300);}.code .n{color:#c39ad9;}
+@media(max-width:900px){.bub-grid,.gdn-wrap{grid-template-columns:1fr;}.tail-grid{grid-template-columns:repeat(2,1fr);}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow"><span class="d"></span>Geurus · 산출물 ③④ — Bubble &amp; Garden</div>
+  <h1>Speech Bubble <span class="kr">· 정원 패널</span></h1>
+  <div class="lede">그루가 지금 무엇을 하는지 알리는 <b>픽셀아트 말풍선</b>과, 그루들이 모여 있는 <b>정원 패널</b>이에요. 말풍선 테두리는 라운드가 아니라 <b>픽셀 계단</b>으로 깎았고, 패널은 창 테두리 없이 투명 배경 위에 뜹니다. 포즈·모션은 앞 문서의 <code>POSE</code>·<code>MOTION</code>을 그대로 씁니다.</div>
+
+  <!-- ③ -->
+  <div class="sec">
+    <div class="sec-label">산출물 ③ — Speech bubble</div>
+    <div class="sec-h">말풍선 · 상태 3종</div>
+    <div class="sec-d">배경 <code>--c-bg-elevated</code> · 테두리 <code>--c-border-strong</code>. 좌측 바로 상태를 구분해요 — 기본은 바 없음, 경고 <code>--c-danger</code>, 성공 <code>--c-success</code>. <b>한글은 Noto Sans KR, 숫자·툴명은 IBM Plex Mono</b>로 섞습니다.</div>
+    <div class="bub-grid" id="bubStates"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Tail direction</div>
+    <div class="sec-h">꼬리 방향 4종</div>
+    <div class="sec-d">그루가 패널 어디에 있느냐에 따라 꼬리를 고릅니다. 그루가 <b>아래</b>에 있으면 <code>down</code>, <b>위</b>에 있으면 <code>up</code>, 좌우 공간이 없으면 <code>left</code>/<code>right</code>. 꼬리는 3px 계단이라 픽셀 결이 유지돼요.</div>
+    <div class="tail-grid" id="tails"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Width rules</div>
+    <div class="sec-h">폭 규칙</div>
+    <div class="wrule">
+      <div class="wrow"><span class="wl">min 84px</span><span class="wd"><b>최소 폭</b> — <span style="font-family:var(--font-mono)">완료 · 2m</span>처럼 짧은 카피도 꼬리가 붙을 자리를 확보해요.</span></div>
+      <div class="wrow"><span class="wl">max 208px</span><span class="wd"><b>최대 폭</b> — 패널 폭 360px의 약 58%. 넘치면 <b>말줄임</b>. 두 줄로 흐르지 않게 한 줄 고정.</span></div>
+      <div class="wrow"><span class="wl">padding</span><span class="wd">가로 <b>8px</b> · 세로 <b>5px</b>. 테두리 2px를 포함해 픽셀 정렬이 깨지지 않는 값.</span></div>
+      <div class="wrow"><span class="wl">overflow</span><span class="wd">툴명이 길면 <b>툴명을 우선 보존</b>하고 뒤 문장을 줄여요 — <span style="font-family:var(--font-mono)">Bash 실행 중 · 40s</span> → <span style="font-family:var(--font-mono)">Bash… · 40s</span>가 아니라 <span style="font-family:var(--font-mono)">Bash 실행… · 40s</span>.</span></div>
+    </div>
+    <div class="code"><span class="c">// 말풍선 — 픽셀 계단 테두리 · 꼬리 4방향</span>
+<span class="k">const</span> <span class="g">BUBBLE</span> = {
+  minW: <span class="n">84</span>, maxW: <span class="n">208</span>, padX: <span class="n">8</span>, padY: <span class="n">5</span>, border: <span class="n">2</span>,
+  corner: <span class="n">2</span>,                        <span class="c">// 계단 깊이(px) — 라운드 대신</span>
+  tail: { size: <span class="n">3</span>, dirs: [<span class="s">'down'</span>,<span class="s">'up'</span>,<span class="s">'left'</span>,<span class="s">'right'</span>] },
+  kind: {
+    base:    { bar: <span class="k">null</span> },
+    warning: { bar: <span class="s">'--c-danger'</span> },   <span class="c">// 승인 대기 · 인증 필요</span>
+    success: { bar: <span class="s">'--c-success'</span> },  <span class="c">// 완료</span>
+  },
+};</div>
+  </div>
+
+  <!-- ④ -->
+  <div class="sec">
+    <div class="sec-label">산출물 ④ — Garden panel</div>
+    <div class="sec-h">정원 패널 · 배경 2안</div>
+    <div class="sec-d">권장 <b>360 × 240</b>(내용에 따라 세로 가변). 프로젝트 하나가 <b>화단 한 줄</b>이고 그 흙 위에 그루가 서요. 창 테두리가 없으니 상단 <b>그립 바</b>가 유일한 드래그 손잡이예요 — 체커보드는 투명 영역입니다.</div>
+    <div class="gdn-wrap" id="gardens"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-label">Rules</div>
+    <div class="sec-h">배치 · 상한 · 우선순위</div>
+    <div class="sec-d">한 화단에 <b>최대 5마리</b>까지 세우고 넘으면 <code>+N</code>으로 접어요. 화단은 최대 3개까지 보이고, 그 아래는 스크롤 대신 <b>접힌 프로젝트 줄</b>로 요약합니다.</div>
+    <div class="prio" id="prio"></div>
+    <div class="code"><span class="c">// 정원 패널 배치 규칙</span>
+<span class="k">const</span> <span class="g">GARDEN</span> = {
+  size: { w: <span class="n">360</span>, minH: <span class="n">240</span> },   <span class="c">// 세로는 화단 수에 따라 가변</span>
+  bedsVisible: <span class="n">3</span>,                  <span class="c">// 초과 프로젝트는 접힌 줄로</span>
+  slotsPerBed: <span class="n">5</span>,                  <span class="c">// 초과 그루는 +N 배지</span>
+  <span class="c">// 큰·앞에 둘 순서 — 위가 우선</span>
+  priority: [<span class="s">'blocked'</span>,<span class="s">'crashed'</span>,<span class="s">'done'</span>,<span class="s">'working'</span>,<span class="s">'idle'</span>],
+  scaleByPriority: { blocked: <span class="n">3</span>, crashed: <span class="n">3</span>, done: <span class="n">2</span>, working: <span class="n">2</span>, idle: <span class="n">2</span> },
+  grip: { h: <span class="n">26</span>, drag: <span class="k">true</span> },      <span class="c">// 창 테두리 없음 → 유일한 손잡이</span>
+  bg: <span class="s">'solid'</span>,                     <span class="c">// 'solid' | 'clear'</span>
+};</div>
+  </div>
+
+  <div class="note"><span class="ng" id="ng"></span><div><b>다음 단계</b><br>3단(<code>⑤ 타입 구분</code> · <code>⑥ 빈 상태</code> · <code>⑦ 트레이</code>)으로 마감하면 돼요. ⑤는 색을 못 쓰는 제약이 있으니 잎 변주 · 발밑 배지 · 배율 차등 세 방향을 비교안으로 만들 예정입니다.</div></div>
+</div>
+
+<script>
+const PAL={'.':null,G:'#e6a536',D:'#c98a22',H:'#ffd770',L:'#6fcf7c',l:'#3f9550',E:'#10182b',W:'#f4ecd2',k:'#ff9b6b',b:'#8a5a1e',m:'#7a4412',s:'#5fb8e6',z:'#9fb0d8'};
+const POSE={
+  stand:["................","....LL....LL....","...LlLL..LLlL...","....LLLllLLL....",".......ll.......","....GGGGGGGG....","...HHGGGGGGGG...","..HHGGGGGGGGGG..","..GGGWEGGWEGGG..","..GkGEEGGEEGkG..","..GGGGGmmGGGGD..","..GGGGGGGGGGDD..","...GGGGGGGGDD...","...GGGGGGGDDD...","....DGGGGGGD....","....bb....bb....","................","................"],
+  squash:["................","................","..LL........LL..","..LlLL....LLlL..","...LLLLllLLLL...",".......ll.......","...HHGGGGGGGG...","..HHGGGGGGGGGG..","..GGGWEGGWEGGG..","..GkGEEGGEEGkG..","..GGGGGmmGGGGD..",".GGGGGGGGGGGGDD.",".GGGGGGGGGGGGDD.","..GGGGGGGGGDDD..","...DGGGGGGDD....","..bbb....bbb....","................","................"],
+  lean:["................",".....LL....LL...","....LlLL..LLlL..",".....LLLllLLL...","........ll......",".....GGGGGGGG...","....HHGGGGGGGG..","...HHGGGGGGGGGG.","..GGGWEGGWEGGG..","..GkGEEGGEEGkG..","..GGGGGmmGGGGD..","..GGGGGGGGGGDD..","..GGGGGGGGDDD...","..GGGGGGGDDD....","...DGGGGGGD.....","...bb....bb.....","................","................"],
+};
+const EXPR={
+  idle:{},
+  happy:{"8,5":"G","8,6":"G","8,9":"G","8,10":"G","9,5":"E","9,6":"E","9,9":"E","9,10":"E","9,3":"k","9,12":"k","10,5":"G","10,6":"m","10,7":"m","10,8":"m","10,9":"m","10,12":"G","11,6":"G","11,7":"m","11,8":"m","11,9":"G"},
+  think:{"8,5":"E","8,6":"E","8,9":"E","8,10":"E","9,5":"G","9,6":"G","9,9":"G","9,10":"G","10,5":"G","10,6":"G","10,7":"m","10,8":"G","8,13":"z","7,13":"z"},
+  merge:{"8,5":"H","8,6":"E","8,9":"H","8,10":"E","9,5":"E","9,6":"H","9,9":"E","9,10":"H","9,3":"k","9,12":"k","10,5":"m","10,6":"G","10,7":"m","10,8":"m","10,9":"G","10,10":"m","11,6":"m","11,7":"m","11,8":"m","11,9":"m"},
+  conflict:{"8,5":"E","8,6":"E","8,9":"E","8,10":"E","9,5":"E","9,6":"E","9,9":"E","9,10":"E","10,6":"G","10,7":"m","10,8":"m","10,9":"G","11,7":"m","11,8":"m","8,13":"s","9,13":"s"},
+  sleepy:{"8,5":"G","8,6":"G","8,9":"G","8,10":"G","9,5":"E","9,6":"E","9,9":"E","9,10":"E","10,7":"G","10,8":"m","5,13":"z","4,14":"z"},
+};
+function rects(grid,expr){
+  const p=EXPR[expr]||{};let r='';
+  for(let y=0;y<18;y++){const row=grid[y]||'................';
+    for(let x=0;x<16;x++){let ch=row[x];const q=p[y+','+x];if(q!==undefined)ch=q;const c=PAL[ch];if(!c)continue;
+      r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${c}"/>`;}}
+  return r;
+}
+function geuru(px,pose,expr){
+  return `<svg width="${16*px}" height="${18*px}" viewBox="0 0 16 18" shape-rendering="crispEdges">${rects(POSE[pose||'stand'],expr||'idle')}</svg>`;
+}
+
+/* 한글은 Noto Sans KR, 영숫자·툴명은 IBM Plex Mono */
+const MONO_STYLE='font-family:'+String.fromCharCode(39)+'IBM Plex Mono'+String.fromCharCode(39)+',monospace;font-size:10.5px;color:#b8c0d8';
+function monoize(t){
+  return t.replace(/([A-Za-z0-9.:+]+)/g,'<span style="'+MONO_STYLE+'">$1</span>');
+}
+/* ═══ ③ 말풍선 — 픽셀 계단 테두리 ═══ */
+/* SVG로 그려 계단 코너·꼬리를 픽셀 단위로 통제 */
+function bubble(opts){
+  const {text,mono,kind='base',tail='down',u=3}=opts;
+  // 측정: 한글 1자 ≈ 7.2px, 영숫자 ≈ 4.4px @ 11px 기준 (u=3 스케일 기준 셀 환산)
+  const est=[...text].reduce((a,ch)=>a+(/[\uac00-\ud7a3]/.test(ch)?11.4:/\s/.test(ch)?3.6:/[·]/.test(ch)?5.2:6.4),0);
+  const padX=8,padY=5,minW=84,maxW=208;
+  const w=Math.max(minW,Math.min(maxW,Math.round(est+padX*2+(kind==='base'?0:4))));
+  const h=26;
+  const bar=kind==='warning'?'#ff6b6b':kind==='success'?'#6fcf7c':null;
+  const c=2; // 계단 깊이
+  const tailSz=6, tailW=10;
+  const vw=w, vh=h+tailSz;
+  const bodyY=tail==='up'?tailSz:0;
+  // 계단 코너 path
+  const x0=0,y0=bodyY,x1=w,y1=bodyY+h;
+  const path=`M${x0+c*2} ${y0} H${x1-c*2} V${y0+c} H${x1-c} V${y0+c*2} H${x1} V${y1-c*2} H${x1-c} V${y1-c} H${x1-c*2} V${y1} H${x0+c*2} V${y1-c} H${x0+c} V${y1-c*2} H${x0} V${y0+c*2} H${x0+c} V${y0+c} H${x0+c*2} Z`;
+  let tailPath='';
+  const cx=Math.round(w*0.28);
+  if(tail==='down')  tailPath=`M${cx} ${y1-1} h${tailW} l${-tailW/2} ${tailSz} Z`;
+  if(tail==='up')    tailPath=`M${cx} ${y0+1} h${tailW} l${-tailW/2} ${-tailSz} Z`;
+  if(tail==='left')  tailPath=`M${x0+1} ${bodyY+h/2-tailW/2} v${tailW} l${-tailSz} ${-tailW/2} Z`;
+  if(tail==='right') tailPath=`M${x1-1} ${bodyY+h/2-tailW/2} v${tailW} l${tailSz} ${-tailW/2} Z`;
+  const tw=(tail==='left'||tail==='right')?w+tailSz:w;
+  const tx=tail==='left'?tailSz:0;
+  return `<svg width="${tw}" height="${vh}" viewBox="${tail==='left'?-tailSz:0} 0 ${tw} ${vh}" shape-rendering="crispEdges" style="overflow:visible">
+    <g fill="#1f273e" stroke="#45506e" stroke-width="2" stroke-linejoin="miter">
+      <path d="${path}"/>
+      ${tailPath?`<path d="${tailPath}"/>`:''}
+    </g>
+    ${tailPath?`<path d="${tailPath}" fill="#1f273e" stroke="none"/>`:''}
+    ${bar?`<rect x="${x0+2}" y="${y0+c*2}" width="3" height="${h-c*4}" fill="${bar}"/>`:''}
+    <foreignObject x="${x0+padX+(bar?5:0)}" y="${y0+padY}" width="${w-padX*2-(bar?5:0)}" height="${h-padY*2}">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:'Noto Sans KR',sans-serif;font-size:11px;line-height:16px;color:#f4ecd2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${monoize(text)}</div>
+    </foreignObject>
+  </svg>`;
+}
+
+/* 상태 3종 */
+const BUB_STATES=[
+  {kind:'base',tag:'base',text:'Bash 실행 중 · 40s',pose:'lean',expr:'think',
+   note:'기본. 좌측 바 없음. 툴명·시간은 <span class="m">mono</span>, 서술은 한글.'},
+  {kind:'warning',tag:'warning',text:'승인이 필요해요 · 3 files',pose:'stand',expr:'conflict',
+   note:'좌측 <b>3px danger 바</b>. 승인 대기·인증 필요 등 <b>사용자 행동이 필요할 때</b>만.'},
+  {kind:'success',tag:'success',text:'완료 · 2m 15s',pose:'stand',expr:'merge',
+   note:'좌측 <b>3px success 바</b>. <span class="m">done</span> 모션과 함께 뜨고 확인 시 사라져요.'},
+  {kind:'warning',tag:'warning',text:'인증이 필요해요 · 401',pose:'stand',expr:'conflict',
+   note:'에러는 <b>사유 먼저 · 코드 뒤</b>. 느낌표 없이 사실만.'},
+];
+document.getElementById('bubStates').innerHTML=BUB_STATES.map(b=>`
+  <div class="card">
+    <div class="card-hd"><span class="nm">${b.kind}</span><span class="tg ${b.kind==='warning'?'w':b.kind==='success'?'s':''}">${b.tag}</span></div>
+    <div class="card-body stage">
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">
+        ${bubble({text:b.text,kind:b.kind,tail:'down'})}
+        <div style="margin-left:14px">${geuru(3,b.pose,b.expr)}</div>
+      </div>
+    </div>
+    <div class="card-note">${b.note}</div>
+  </div>`).join('');
+
+/* 꼬리 4방향 */
+const TAILS=[
+  {d:'down',lb:'down · 그루가 아래',layout:'col'},
+  {d:'up',lb:'up · 그루가 위',layout:'colrev'},
+  {d:'left',lb:'left · 그루가 왼쪽',layout:'rowrev'},
+  {d:'right',lb:'right · 그루가 오른쪽',layout:'row'},
+];
+document.getElementById('tails').innerHTML=TAILS.map(t=>{
+  const bub=bubble({text:'Read 중 · 12s',kind:'base',tail:t.d});
+  const g=geuru(3,'stand','think');
+  let inner;
+  if(t.layout==='col')    inner=`<div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px">${bub}<div style="margin-left:14px">${g}</div></div>`;
+  if(t.layout==='colrev') inner=`<div style="display:flex;flex-direction:column;align-items:flex-start;gap:2px"><div style="margin-left:14px">${g}</div>${bub}</div>`;
+  if(t.layout==='row')    inner=`<div style="display:flex;align-items:center;gap:3px">${g}${bub}</div>`;
+  if(t.layout==='rowrev') inner=`<div style="display:flex;align-items:center;gap:3px">${bub}${g}</div>`;
+  return `<div class="tail-cell"><div class="lb">${t.lb}</div><div class="bd stage">${inner}</div></div>`;
+}).join('');
+
+/* ═══ ④ 정원 패널 ═══ */
+function slot(px,pose,expr,cls){return `<div class="slot ${cls||''}">${geuru(px,pose,expr)}</div>`;}
+function bed(name,count,slots,more){
+  return `<div class="bed">
+    <div class="bed-lbl"><span class="pn">${name}</span><span class="pc">${count}</span><span class="ln"></span></div>
+    <div class="bed-soil">${slots}${more?`<span class="more">+${more}</span>`:''}</div>
+  </div>`;
+}
+function gardenPanel(mode){
+  const bed1=bed('gitgrove','3 그루',
+    slot(3,'stand','conflict','pri')+slot(2,'lean','think')+slot(2,'stand','idle'),0);
+  const bed2=bed('geurus','4 그루',
+    slot(2,'stand','merge','done')+slot(2,'squash','think')+slot(2,'stand','idle')+slot(2,'stand','sleepy'),0);
+  const bed3=bed('moyeobwayo','7 그루',
+    slot(2,'lean','think')+slot(2,'stand','idle')+slot(2,'squash','think')+slot(2,'stand','idle')+slot(2,'stand','sleepy'),2);
+  return `<div class="panel ${mode}">
+    <div class="p-grip"><span class="dots"><i></i><i></i></span><span class="ttl">Geurus</span><span class="cnt">14 그루 · 3 프로젝트</span><span class="act"><i></i><i></i></span></div>
+    <div class="p-floor">${bed1}${bed2}${bed3}</div>
+  </div>`;
+}
+document.getElementById('gardens').innerHTML=`
+  <div class="gdn-shot">
+    <div class="hd"><span class="nm">A · 반투명 패널</span><span class="sz">360 × 240+</span></div>
+    <div class="bd">${gardenPanel('solid')}</div>
+    <div class="nt"><b>권장.</b> 78% 다크 + <b>blur 10px</b>. 그루와 화단이 배경과 분리돼 바로 읽혀요. 그립 바가 패널 헤더 역할을 겸합니다.</div>
+  </div>
+  <div class="gdn-shot">
+    <div class="hd"><span class="nm">B · 완전 투명</span><span class="sz">360 × 240+</span></div>
+    <div class="bd">${gardenPanel('clear')}</div>
+    <div class="nt">그루만 데스크톱에 떠 있는 느낌. 몰입은 좋지만 <b>밝은 배경에서 판독이 떨어져요</b> — 그립 바만 반투명으로 남겨 잡을 곳을 확보.</div>
+  </div>`;
+
+/* 우선순위 */
+const PRIO=[
+  {st:'blocked',kr:'승인 대기',ex:'conflict',ds:'<b>×3 · 최전면 · 빨간 밑줄.</b> 사용자가 손대야 진행돼요.'},
+  {st:'crashed',kr:'비정상 종료',ex:'conflict',ds:'<b>×3.</b> 실패를 놓치면 안 되니 승인 대기 바로 뒤.'},
+  {st:'done',kr:'완료 · 미확인',ex:'merge',ds:'<b>×2 · 초록 밑줄.</b> 확인하면 밑줄이 사라지고 idle로.'},
+  {st:'working',kr:'작업 중',ex:'think',ds:'<b>×2.</b> 정상 진행이라 강조 없이 움직임으로만 알려요.'},
+  {st:'idle',kr:'유휴',ex:'sleepy',ds:'<b>×2 · 뒤쪽.</b> 5마리를 넘기면 가장 먼저 <span style="font-family:var(--font-mono)">+N</span>으로 접혀요.'},
+];
+document.getElementById('prio').innerHTML=PRIO.map((p,i)=>`
+  <div class="prio-row">
+    <span class="rk">${i+1}</span>
+    <span class="gu">${geuru(2,'stand',p.ex)}</span>
+    <span class="st" style="color:${i<2?'var(--c-danger)':i===2?'var(--c-success)':'var(--c-text-muted)'}">${p.st}</span>
+    <span class="ds">${p.kr} — ${p.ds}</span>
+  </div>`).join('');
+
+document.getElementById('ng').innerHTML=geuru(2,'stand','happy');
+</script>
+</body>
+</html>

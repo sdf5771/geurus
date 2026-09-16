@@ -1,0 +1,17 @@
+/* 오버레이 창은 투명 배경 유지 — 불투명 사각형이 남으면 안 된다 */
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+}
+
+/* 크기는 창에 맞추기만 한다. backing store는 CSS 크기 × devicePixelRatio로 잡아 1:1로 그린다 */
+.overlay-stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
