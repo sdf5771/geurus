@@ -26,7 +26,16 @@
 5. **클릭 통과 복구 설계는 Electron 30 이벤트 순서 실측에 의존** — 버전을 올리면 재측정 필수 ([architecture.md](agent-log/architecture.md))
 6. **앱을 띄우거나 파일을 만지는 에이전트를 동시에 돌리지 않는다** — 실제로 충돌할 뻔했다 ([stack.md](agent-log/stack.md))
 
-**⚠️ Codex로 인계할 때** — `AGENTS.md`는 `.Codex/agents/` 를 보라고 하지만 그 디렉터리는 **없다.** 실제 에이전트 정의는 `.claude/agents/*.md`(심볼릭 링크)에 있고, Claude Code의 서브에이전트 실행 기능에 묶여 있다. Codex에는 같은 위임 메커니즘이 없으므로, **역할 표는 "그 관점으로 점검하라"는 체크리스트로 쓰고 직접 구현**하거나 사용자와 범위를 조정할 것.
+**⚠️ 에이전트 배치가 툴마다 다르다** [확인 2026-09-17]
+
+| 툴 | 경로 | 배치 |
+|---|---|---|
+| Claude Code | `.claude/agents/*.md` | backend · frontend · infra · product-planner · qa · researcher · review · vision · web-design (9) |
+| **Codex** | `.codex/agents/*.toml` | **backend · frontend · qa · review (4)** |
+
+- `AGENTS.md`의 `ls .Codex/agents/`는 대소문자가 틀렸다. 실제 경로는 **`.codex/agents/`**
+- Codex에는 **vision·infra·product-planner·researcher·web-design이 없다.** 1단계에서 실제로 쓴 vision(브랜드 감사)·infra(Electron 검토)를 Codex에서는 위임할 수 없으므로, 그 영역 작업이 생기면 **사용자에게 먼저 알리고** 범위를 조정하거나 Claude Code 쪽으로 넘길 것
+- 배치된 4종은 1단계를 돌린 구성과 같으므로, 2단계(backend 워처·IPC → frontend 렌더 → qa → review)는 Codex 배치만으로 진행 가능
 
 ---
 
