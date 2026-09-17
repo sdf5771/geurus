@@ -5,32 +5,58 @@
 
 ---
 
-## 현재 진행 상태 (최종 갱신: 2026-09-16)
+## 인계 브리핑 (이어받는 에이전트가 먼저 읽을 것)
+
+**지금 상태 한 줄** — 마일스톤 1(오버레이 셸) 완료·머지됨. **다음 작업은 마일스톤 2(데이터 레이어)**이고, 시작 전에 **Electron 업그레이드 여부(사용자 판단)** 가 걸려 있다.
+
+| 확인할 것 | 값 |
+|---|---|
+| 저장소 | `github.com/sdf5771/geurus` · 기본 브랜치 `main` · 현재 main = PR #2까지 반영 |
+| 실행 확인 | `npm install` → `npm test`(240 통과) → `npm run build` → `npm start` |
+| 앱 종료 | 메뉴바 새싹 아이콘 → `종료` (독 아이콘 없음) |
+| 커밋 안 하는 파일 | `CLAUDE.md`, `.claude/`, `AGENTS.md` — 에이전트 정의는 `~/Documents/GitHub/my-agents`를 가리키는 **절대경로 심볼릭 링크** |
+| 미실행 | **수동 체크리스트 `docs/qa/M1_MANUAL_CHECKLIST.md` 12항목** — OS 수준 클릭 통과·Space·메뉴바 반전은 사람만 확인 가능 |
+
+**함정 (모르면 반드시 밟는 것)**
+
+1. **`docs/design/`은 지우면 안 된다** — `npm run snapshot:check`가 이 HTML을 입력으로 스프라이트 데이터를 대조한다
+2. **`EXPR`은 키별로 원본이 다르다** — `motion-system.html`의 `think`에는 옛 zzz가 남아 있다. zzz는 `sleepy` 전용 ([design.md](agent-log/design.md))
+3. **dev는 단일 인스턴스 잠금이 없다** — 빌드와 동시에 띄우면 그루가 2마리. DevTools는 `GEURUS_DEVTOOLS=1 npm run dev`
+4. **`~/.claude/`는 읽기만** — 훅 설치·`settings.json` 수정 금지 (2단계에서도 워처 방식 유지)
+5. **클릭 통과 복구 설계는 Electron 30 이벤트 순서 실측에 의존** — 버전을 올리면 재측정 필수 ([architecture.md](agent-log/architecture.md))
+6. **앱을 띄우거나 파일을 만지는 에이전트를 동시에 돌리지 않는다** — 실제로 충돌할 뻔했다 ([stack.md](agent-log/stack.md))
+
+**⚠️ Codex로 인계할 때** — `AGENTS.md`는 `.Codex/agents/` 를 보라고 하지만 그 디렉터리는 **없다.** 실제 에이전트 정의는 `.claude/agents/*.md`(심볼릭 링크)에 있고, Claude Code의 서브에이전트 실행 기능에 묶여 있다. Codex에는 같은 위임 메커니즘이 없으므로, **역할 표는 "그 관점으로 점검하라"는 체크리스트로 쓰고 직접 구현**하거나 사용자와 범위를 조정할 것.
+
+---
+
+## 현재 진행 상태 (최종 갱신: 2026-09-17)
 
 | 항목 | 상태 |
 |---|---|
-| 단계 | **마일스톤 1(오버레이 셸) 완료 — PR #1 스쿼시 머지됨** [2026-09-16] |
-| main | `8aa0443 feat: 마일스톤 1 오버레이 셸 (#1)` · 머지 후 main에서 test 240·build 재확인 · `feat/m1-overlay-shell` 삭제됨 |
-| 검증 | review **Ready** · qa 최종 재검증 **전 항목 통과, 새 버그 없음** · vision **이탈 없음** |
-| 남은 일 | 사용자 수동 체크리스트 실행 · 아래 결정 대기 항목 · 2단계 착수 |
+| 단계 | **마일스톤 1(오버레이 셸) 완료** · 진행 중인 구현 작업 없음 |
+| main | `7c37131 docs: 정본 v2.6 (#2)` ← `8aa0443 feat: 마일스톤 1 오버레이 셸 (#1)`. 두 PR 모두 **스쿼시 머지**, 브랜치 삭제됨 |
+| 검증 | 자동: test **240**·typecheck·build·`snapshot:check` 통과 · review **Ready** · qa 전 항목 통과 · vision **이탈 없음** / 수동: **미실행** |
+| 환경 | 개발 머신 Node **v23.11.0** (Electron 업그레이드하려면 24 LTS 필요) |
+| 남은 일 | 수동 체크리스트 실행 · Electron 판단 · 2단계 착수 |
 
 ### 다음에 할 일
 
-1. 사용자 수동 체크리스트(`docs/qa/M1_MANUAL_CHECKLIST.md`) 결과 수신 → 실패 항목 있으면 backend/frontend 배정 (특히 **OS 수준 실클릭 통과·Space·메뉴바 반전**은 아직 사람 확인 전)
-2. 2단계(데이터 레이어) 착수 — **IPC 스키마 backend↔frontend 선합의부터**
-3. 이 로그의 머지 기록(위 표)은 **다음 작업 PR에 함께 커밋** (로그 전용 PR 만들지 않음)
+1. **Electron 업그레이드 여부 결정** (아래 미해결 항목) — 올린다면 **2단계 착수 전에**, 순서는 ① 사용자 Node 24 설치 + 30에서 WindowServer 기준선 측정 ② infra가 의존성 교체 ③ backend가 이벤트 순서 재측정 ④ 수동 체크리스트
+2. 수동 체크리스트(`docs/qa/M1_MANUAL_CHECKLIST.md`) 결과 수신 → 실패 항목은 backend/frontend에 배정 (**OS 수준 실클릭 통과·Space·메뉴바 반전은 아직 사람 확인 전**)
+3. 2단계(데이터 레이어) 착수 — **IPC 스키마 backend↔frontend 선합의부터**. 입력 스키마는 `docs/transcript-schema.md`, 판정 함정은 [architecture](agent-log/architecture.md)·정본 3-3
 
 ## 머지 대기 PR
 
-- 없음 (PR #1 머지 완료)
+- 없음 (PR #1·#2 머지 완료)
 
 ## 미해결 · 사용자 결정 대기
 
-- [ ] **머지 방식** — 스쿼시 권장 / 커밋 보존 시 커밋 정리 필요 → [history](agent-log/history/2026-09.md)
+- [x] **머지 권한·방식** — PM 위임 [2026-09-16], 스쿼시 머지로 진행 중(PR #1·#2 적용)
 - [ ] **그루 클릭 시 포커스 정책**(`focusable`) — **보류 확정** [2026-09-16]. 1단계엔 클릭 동작이 없어 지금 정할 필요 없음. **2단계에서 "클릭하면 무엇을 할지"가 정해질 때 함께 결정**하고, 그때 qa가 두 설정을 실측해 근거를 만든다. 그 전까지는 현 상태(포커스를 받음) 유지 → [interfaces](agent-log/interfaces.md)
 - [x] **stretch 잎 겹침 → C 확정** [사용자 2026-09-16]: 그대로 두고 정본 3-8에 "키 삽입 순서·나중 키 우선" 계약 명시. 3단계에서 모션이 재생될 때 어색하면 그때 디자인 원본을 손본다
 - [x] **정본·브리프 정정** [사용자 허가 2026-09-16, PM이 직접 수정] — 정본 v2.6
-- [ ] **Electron 30 지원 종료 · audit 7건** — **infra 검토 중** (위험도·목표 버전·깨질 API·연쇄 범위·GitGrove 버전 정책). 결과 보고 후 사용자 판단 → [stack](agent-log/stack.md)
+- [ ] **Electron 업그레이드** — infra 검토 완료: **지금(2단계 전) 30.5.1 → 44.4.1 권고.** scratchpad 실측으로 audit 0건·테스트 240 통과·코드 수정 0줄 확인. 이유는 수동 체크리스트를 **두 번 태우지 않기 위함**. 사전 조건 **Node 24 LTS 설치(사용자)** → 사용자 판단 대기 → [stack](agent-log/stack.md)
 - [ ] `docs/WRITING_GUIDE.md` 미생성 (원본 `docs/design/writing-guide.html`)
 - [ ] 후속 백로그 Nit-A~D · Nit-1(3단계 전) → [history](agent-log/history/2026-09.md)
 - [ ] 멀티모니터 창 위치 정책 · 창 위치 저장 — 4단계
@@ -50,12 +76,12 @@
 
 | 파일 | 내용 | 최종 갱신 |
 |---|---|---|
-| [stack.md](agent-log/stack.md) | 스택·설치 버전·명령·빌드 구성·실행 환경·에이전트 배치·위임 운영 교훈 | 2026-09-16 |
-| [interfaces.md](agent-log/interfaces.md) | 역할 경계·IPC 계약 v1·창 조건(위치·포커스) | 2026-09-16 |
-| [architecture.md](agent-log/architecture.md) | main 창·복구·탐색 차단·크래시·단일 인스턴스·CSP 결정과 이유, 이벤트 순서 실측표, 렌더러 래스터·히트박스 | 2026-09-16 |
-| [design.md](agent-log/design.md) | `docs/design` 5종 매핑·EXPR 원본 지정·원본 데이터 이슈·브랜드 하드 룰·라이팅 | 2026-09-16 |
-| [product.md](agent-log/product.md) | 프로젝트 개요·마일스톤·1단계 확정 범위·제품 결정 대기 | 2026-09-16 |
-| [history/2026-09.md](agent-log/history/2026-09.md) | 초기 세팅·M1 구현/검증/수정 라운드 1·2 커밋 이력·후속 백로그 | 2026-09-16 |
+| [stack.md](agent-log/stack.md) | 스택·설치 버전·명령·빌드 구성·실행 환경·에이전트 배치·**Electron 44 업그레이드 검토** | 2026-09-17 |
+| [interfaces.md](agent-log/interfaces.md) | 역할 경계·IPC 계약 v1·창 조건(위치·포커스 보류 결정) | 2026-09-16 |
+| [architecture.md](agent-log/architecture.md) | main 창·복구·탐색 차단·크래시·단일 인스턴스·CSP 결정과 이유, **이벤트 순서 실측표(Electron 30 기준)**, 렌더러 래스터·히트박스 | 2026-09-16 |
+| [design.md](agent-log/design.md) | `docs/design` 5종 매핑·**EXPR 키별 원본 지정**·stretch 잎 계약·브랜드 하드 룰·라이팅 | 2026-09-16 |
+| [product.md](agent-log/product.md) | 마일스톤·1단계 확정 범위·**2단계 착수 메모(입력·판정 함정)**·제품 결정 대기 | 2026-09-17 |
+| [history/2026-09.md](agent-log/history/2026-09.md) | M1 구현/검증/수정 라운드 이력·**머지 결과(PR #1·#2)**·Electron 검토·후속 백로그 | 2026-09-17 |
 
 ## 문서 위치
 

@@ -15,8 +15,8 @@
 |---|---|---|---|
 | 0 | 사전 조사 | — | ✅ |
 | 0.5 | 디자인 시안 ①~⑦ | Claude Design | ✅ |
-| 1 | 오버레이 셸 | backend → frontend → qa → review → vision | 🔄 **구현·검증 완료, PR 머지 대기** |
-| 2 | 데이터 레이어 (JSONL 워처 → IPC) | backend (IPC 스키마 선합의) | ⬜ |
+| 1 | 오버레이 셸 | backend → frontend → qa → review → vision | ✅ **PR #1 머지** [2026-09-16] · 수동 검증 일부 대기 |
+| 2 | 데이터 레이어 (JSONL 워처 → IPC) | backend (IPC 스키마 선합의) | ⬜ **다음 작업** |
 | 3 | 모션 시스템 | frontend | ⬜ |
 | 4 | 말풍선 · 정원 패널 | frontend (신규 화면은 web-design 선행) | ⬜ |
 | 5 | 배포 | infra | ⬜ |
@@ -34,6 +34,15 @@
 
 - 최초 요청 「`Geurus 마감 세트.html` 구현」은 이 범위로 조정됨. 마감 세트 중 1단계 포함은 `LEAF`/`LEAF_OFFSET`과 `TRAY_GLYPH.sprout`뿐
 - 창 위치 저장·멀티모니터 정책·드래그 그립은 4단계
+
+## 2단계(데이터 레이어) 착수 메모
+
+- 입력: `~/.claude/projects/<enc-cwd>/<sessionId>/subagents/*.meta.json`(목록·`agentType`·`description`·`toolUseId`·`spawnDepth`) · `subagents/agent-<id>.jsonl`(실행 중 툴) · 부모 `<sessionId>.jsonl`(비동기 완료 알림). 스키마는 `docs/transcript-schema.md`
+- **판정 함정 3가지**: 툴명은 `Agent`(`Task` 아님) · 서브에이전트는 별도 파일(부모에 `isSidechain` 없음) · **대부분 비동기 spawn이라 `tool_result`로 완료를 판정하면 전부 오판** → 부모의 `<task-notification>` 문자열로 판정
+- 프로젝트 식별은 **레코드의 `cwd` 필드**(디렉터리명 인코딩 역변환 금지). 감시는 **디렉터리 감시**(chokidar `add`) — 서브에이전트 파일은 작업 도중 생김
+- 실시간 flush는 검증됨(훅 불필요). `~/.claude/`는 **읽기만**
+- 실패·취소 시 `status` 실제 값은 표본에 없음 → **블랙리스트**(`completed` 아니면 비정상 종료)
+- 이때 함께 정할 것: **그루 클릭 시 동작**과 그에 따른 `focusable` 정책 ([interfaces.md](interfaces.md))
 
 ## 사용자 결정 대기 (제품·정책)
 
