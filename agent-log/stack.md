@@ -61,9 +61,15 @@ Electron 30+ · React 18 · TypeScript 5 · Vite 5 · Zustand · Canvas 2D(부�
 - macOS 26.5.1 · 내장 Liquid Retina XDR(논리 1512×982, scaleFactor 2) · 다크 모드
 - 터미널에 손쉬운 사용 권한 없음 → **OS 수준 실클릭·스크린 캡처 자동화 불가**. 앱 내부 `capturePage`·`sendInputEvent` 하네스로 대체, 나머지는 수동 체크리스트
 
-## 배치된 에이전트 (`.claude/agents/`, 확인일 2026-09-15)
+## 배치된 에이전트
 
-`backend` · `frontend` · `infra` · `product-planner` · `qa` · `researcher` · `review` · `vision` · `web-design`
+| 툴 | 경로 | 배치 | 확인일 |
+|---|---|---|---|
+| Claude Code | `.claude/agents/*.md` | `backend` · `frontend` · `infra` · `product-planner` · `qa` · `researcher` · `review` · `vision` · `web-design` (9) | 2026-09-15 |
+| Codex | `.codex/agents/*.toml` | `backend` · `frontend` · `qa` · `review` (4) | 2026-09-17 |
+
+- Codex에는 **vision·infra·product-planner·researcher·web-design이 없다.** 해당 영역 작업이 필요하면 사용자에게 먼저 알리고 범위를 조정한다
+- `AGENTS.md`(Codex용 PM 페르소나)의 `ls .Codex/agents/`는 대소문자 오타 — 실제는 `.codex/agents/`
 
 - **미배치**: `ai-engineer` (LLM 기능 없음)
 - `infra`는 **5단계(배포)부터** 투입
